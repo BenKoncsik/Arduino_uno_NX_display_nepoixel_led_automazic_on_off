@@ -2,7 +2,7 @@
 
 #define PIN 7
 
-#define NUMPIXELS 30    
+#define NUMPIXELS 100      
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -19,6 +19,7 @@ float volt;
 void setup() {
  Serial.begin(9600);
  pinMode(4, OUTPUT);
+  pinMode(13, OUTPUT);
    pixels.begin();
 }
 void loop() {
@@ -28,16 +29,17 @@ ellenalas = volt * referenciaEllenalas / (5.0 - volt);
 Serial.println(ellenalas);
 if(ellenalas >= 11000.0){
     digitalWrite(4, HIGH);
+    digitalWrite(13, HIGH);
   for(int i = 0; i < NUMPIXELS; i++){
    pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
   }  
   }else{
     digitalWrite(4, LOW);
+     digitalWrite(13, LOW);
     for(int i = 0; i < NUMPIXELS; i++){
    pixels.clear();   
   }
   
   }
   pixels.show();
-  delay(100);
 }
