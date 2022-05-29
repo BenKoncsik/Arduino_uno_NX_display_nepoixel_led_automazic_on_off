@@ -9,7 +9,7 @@
 
 #define PIN 7
 
-#define NUMPIXELS 30      
+#define NUMPIXELS 30
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -25,7 +25,7 @@ int default_blueColor = 125;
 int led_start = 5;
 int led_finish = 25;
 int led_having = 0;
-int led_trim[8] = {2,3,5,4,6,7,10,15};
+int led_trim[8] = {2, 3, 5, 4, 6, 7, 10, 15};
 
 bool auto_led = true;
 
@@ -34,114 +34,132 @@ float meres;
 float ellenalas;
 float volt;
 void setup() {
-   Serial.begin(9600);
-//  wifiSerial.begin(115200);
-// pinMode(4, OUTPUT);
+  Serial.begin(9600);
+  //  wifiSerial.begin(115200);
+  // pinMode(4, OUTPUT);
   pinMode(13, OUTPUT);
-   pixels.begin();
-
-
-// sendToWifi("AT+CWMODE=2",responseTime,DEBUG); // configure as access point
-//  sendToWifi("AT+CIFSR",responseTime,DEBUG); // get ip address
-//  sendToWifi("AT+CIPMUX=1",responseTime,DEBUG); // configure for multiple connections
-//  sendToWifi("AT+CIPSERVER=1,80",responseTime,DEBUG); // turn on server on port 80
-// wifiSerial.print("AT+GMR");
-//  sendToUno("Wifi connection is running!",responseTime,DEBUG);
+  pixels.begin();
+  led_first_on();
+  Serial.println("Be indult.");
+  // sendToWifi("AT+CWMODE=2",responseTime,DEBUG); // configure as access point
+  //  sendToWifi("AT+CIFSR",responseTime,DEBUG); // get ip address
+  //  sendToWifi("AT+CIPMUX=1",responseTime,DEBUG); // configure for multiple connections
+  //  sendToWifi("AT+CIPSERVER=1,80",responseTime,DEBUG); // turn on server on port 80
+  // wifiSerial.print("AT+GMR");
+  //  sendToUno("Wifi connection is running!",responseTime,DEBUG);
 }
 void loop() {
-led_main();
-
+  led_main();
 }
 
-void led_main(){
-String incomingString;
- if (Serial.available() > 0) {
+void led_main() {
+  String incomingString;
+  if (Serial.available() > 0) {
     incomingString = Serial.read();
     Serial.print("Parancs");
-//    Serial.print(incomingString);
-    if(incomingString.equals("48")){
-        auto_led = true;
-        Serial.println("-->Automatikus led vezérlés.");
+    //    Serial.print(incomingString);
+    if (incomingString.equals("48")) {
+      auto_led = true;
+      Serial.println("-->Automatikus led vezérlés.");
     }
-    if(incomingString.equals("49")){
+    if (incomingString.equals("49")) {
       auto_led = false;
-         Serial.println("-->Manuális led vezérlés.");
+      Serial.println("-->Manuális led vezérlés.");
     }
-    if(incomingString.equals("50")){
+    if (incomingString.equals("50")) {
       auto_led = false;
       led_on();
       Serial.println("-->Manuális led vezérlés. Bekapcsolt led!");
     }
-    if(incomingString.equals("51")){
+    if (incomingString.equals("51")) {
       auto_led = false;
       led_off();
       Serial.println("-->Manuális led vezérlés. Kikapcsolt led!");
     }
-    if(incomingString.equals("52")){
+    if (incomingString.equals("52")) {
       auto_led = false;
       led_only_table();
       Serial.println("-->Manuális led vezérlés. Csak a billentyűzet felett bekapcsolt led!");
     }
-    if(incomingString.equals("53")){
+    if (incomingString.equals("53")) {
       auto_led = false;
-      if(led_having == 8){
-      led_having = 0;  
-      }  
-     int led_number = led_halving_on();
+      if (led_having == 8) {
+        led_having = 0;
+      }
+      int led_number = led_halving_on();
       Serial.print("-->Manuális led vezérlés. Csak ");
       Serial.print(led_number);
       Serial.println(" darab bekapcsolt led!");
-     led_having++;
+      led_having++;
     }
- }
-  
+    if (incomingString.equals("54")) {
+      Serial.println("-->Automatikus led vezérlés. Led első inditás. ");
+      led_first_on();
+    }
+
+  }
+
   meres = analogRead(A0);
   volt = meres * (5.0 / 1024.0);
   ellenalas = volt * referenciaEllenalas / (5.0 - volt);
 
-  if(auto_led){
-    if(ellenalas >= 11000.0){
-      led_on();  
-    }else{
-     led_off();
+  if (auto_led) {
+    if (ellenalas >= 11000.0) {
+      led_on();
+    } else {
+      led_off();
     }
   }
-  
+
   pixels.show();
-   delay(100);
-  }
-void led_on(){
-    digitalWrite(4, HIGH);
-    digitalWrite(13, HIGH);
-  for(int i = 0; i < NUMPIXELS; i++){
-   pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
-  }  
+  delay(100);
 }
-void led_off(){
-//    Serial.println("ki");
-    digitalWrite(4, LOW);
-     digitalWrite(13, LOW);
- for(int i = 0; i < NUMPIXELS; i++){
-   pixels.clear();   
+void led_on() {
+  digitalWrite(4, HIGH);
+  digitalWrite(13, HIGH);
+  for (int i = 0; i < NUMPIXELS; i++) {
+    pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
+     pixels.show();
   }
 }
-void led_only_table(){
+void led_off() {
+  //    Serial.println("ki");
+  digitalWrite(4, LOW);
+  digitalWrite(13, LOW);
+  for (int i = 0; i < NUMPIXELS; i++) {
+    pixels.clear();
+  }
+}
+void led_only_table() {
   led_off();
-    for(int i = led_start; i < led_finish; i++){
-   pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
-  }  
+  for (int i = led_start; i < led_finish; i++) {
+    pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
+     pixels.show();
   }
-  int led_halving_on(){
-    led_off();
-    int led_number = 0;
-      for(int i = 0; i < NUMPIXELS; i++){
-        if(i % led_trim[led_having] == 0){
-          led_number++;
-          pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
-        }
+}
+int led_halving_on() {
+  led_off();
+  int led_number = 0;
+  for (int i = 0; i < NUMPIXELS; i++) {
+    if (i % led_trim[led_having] == 0) {
+      led_number++;
+      pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
     }
-    return led_number;
   }
+  return led_number;
+}
+void led_first_on() {
+  for (int i = 0; i < NUMPIXELS; i++) {
+    pixels.clear();
+    pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
+     pixels.show();
+    delay(10);
+  }
+  delay(100);
+  led_on();
+  delay(1000);
+  led_off();
+}
 //void wifi_main(){
 //   if(Serial.available()>0){
 //     String message = readSerialMessage();
@@ -154,9 +172,9 @@ void led_only_table(){
 //    }
 //  }
 //  if(wifiSerial.available()>0){
-//    
+//
 //    String message = readWifiSerialMessage();
-//    
+//
 //    if(find(message,"esp8266:")){
 //       String result = sendToWifi(message.substring(8,message.length()),responseTime,DEBUG);
 //      if(find(result,"OK"))
@@ -186,7 +204,7 @@ void led_only_table(){
 ///*
 //* Name: sendData
 //* Description: Function used to send string to tcp client using cipsend
-//* Params: 
+//* Params:
 //* Returns: void
 //*/
 //void sendData(String str){
@@ -203,7 +221,7 @@ void led_only_table(){
 ///*
 //* Name: find
 //* Description: Function used to match two string
-//* Params: 
+//* Params:
 //* Returns: true if match else false
 //*/
 //boolean find(String string, String value){
@@ -214,11 +232,11 @@ void led_only_table(){
 ///*
 //* Name: readSerialMessage
 //* Description: Function used to read data from Arduino Serial.
-//* Params: 
+//* Params:
 //* Returns: The response from the Arduino (if there is a reponse)
 //*/
 //String  readSerialMessage(){
-//  char value[100]; 
+//  char value[100];
 //  int index_count =0;
 //  while(Serial.available()>0){
 //    value[index_count]=Serial.read();
@@ -235,11 +253,11 @@ void led_only_table(){
 ///*
 //* Name: readWifiSerialMessage
 //* Description: Function used to read data from ESP8266 Serial.
-//* Params: 
+//* Params:
 //* Returns: The response from the esp8266 (if there is a reponse)
 //*/
 //String  readWifiSerialMessage(){
-//  char value[100]; 
+//  char value[100];
 //  int index_count =0;
 //  while(wifiSerial.available()>0){
 //    value[index_count]=wifiSerial.read();
@@ -267,10 +285,10 @@ void led_only_table(){
 //  {
 //    while(wifiSerial.available())
 //    {
-//    // The esp has data so display its output to the serial window 
+//    // The esp has data so display its output to the serial window
 //    char c = wifiSerial.read(); // read the next character.
 //    response+=c;
-//    }  
+//    }
 //  }
 //  if(debug)
 //  {
@@ -293,10 +311,10 @@ void led_only_table(){
 //  {
 //    while(Serial.available())
 //    {
-//      // The esp has data so display its output to the serial window 
+//      // The esp has data so display its output to the serial window
 //      char c = Serial.read(); // read the next character.
 //      response+=c;
-//    }  
+//    }
 //  }
 //  if(debug)
 //  {
