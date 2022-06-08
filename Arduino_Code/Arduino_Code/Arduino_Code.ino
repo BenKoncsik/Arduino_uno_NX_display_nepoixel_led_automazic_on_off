@@ -18,7 +18,7 @@ int delayval = 0; // timing delay in milliseconds
 int redColor = 255;
 int greenColor = 255;
 int blueColor = 255;
-
+int green[3] = {0, 138, 5};
 int default_redColor = 125;
 int default_greenColor = 125;
 int default_blueColor = 125;
@@ -138,6 +138,7 @@ void led_only_table() {
   }
 }
 int led_halving_on() {
+ 
   led_off();
   int led_number = 0;
   for (int i = 0; i < NUMPIXELS; i++) {
@@ -151,7 +152,7 @@ int led_halving_on() {
 void led_first_on() {
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.clear();
-    pixels.setPixelColor(i, pixels.Color(redColor, greenColor, blueColor));
+    pixels.setPixelColor(i, pixels.Color(green[0], green[1], green[2]));
      pixels.show();
     delay(10);
   }
