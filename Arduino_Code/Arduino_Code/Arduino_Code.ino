@@ -1,8 +1,6 @@
-
-
 #include <Adafruit_NeoPixel.h>
 // NX kijelző 9600 baud
-#include "Nextion.h"
+#include <Nextion.h>
 //#include <SoftwareSerial.h>
 
 //SoftwareSerial wifiSerial(5, 6); // RX, TX
@@ -42,18 +40,20 @@ float volt;
 NexButton autoBe = NexButton(0, 4, "auto_be"); 
 NexButton autoKi = NexButton(0, 8, "auto_ki"); 
 NexButton ledBe = NexButton(0, 2, "led_be"); 
-NexButton LedKi = NexButton(0, 3, "led_ki"); 
+NexButton ledKi = NexButton(0, 3, "led_ki"); 
 NexButton billFelett = NexButton(0, 5, "bill_felett"); 
 NexButton felezes = NexButton(0, 6, "felezes"); 
 NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
  
 NexText ledSate = NexText(0, 10, "led_state"); 
+NexText ledSate1 = NexText(0, 10, "led_state1"); 
+NexText ledSate2 = NexText(0, 10, "led_state2"); 
 
 NexTouch *nex_listen_list[] = {
   &autoBe,
   &autoKi,
   &ledBe,
-  &LedKi,
+  &ledKi,
   &billFelett,
   &felezes,
   &elsoInditas,
@@ -61,39 +61,56 @@ NexTouch *nex_listen_list[] = {
 };
 
 void autoBePopCallback(void *ptr) {
-  ledSate.setText("LED: Auto");
+ 
+  ledSate.setText("Automatik");
+  ledState2.setText("us");
+  ledState3.setText("");
     auto_led = true;
 }
 void autoKiPopCallback(void *ptr) {
-  ledSate.setText("LED: Man");
+  ledSate.setText("Manualis");
+  ledState2.setText("");
+  ledState3.setText("");
     auto_led = false;
 }
 void ledBePopCallback(void *ptr) {
-  ledSate.setText("LED: Be");
+  ledSate.setText("Be");
+  ledState2.setText("");
+  ledState3.setText("");
        auto_led = false;
       led_on();
 }
-void LedKiPopCallback(void *ptr) {
-  ledSate.setText("LED: Ki");
+void ledKiPopCallback(void *ptr) {
+  ledSate.setText("Ki");
+  ledState2.setText("");
+  ledState3.setText("");
         auto_led = false;
       led_off();
 }
 void billFelettPopCallback(void *ptr) {
-  ledSate.setText("LED: 1Ind");
+  ledSate.setText("Billentyű");
+  ledSate1.setText("zet ");
+  ledSate2.setText("felett");
        auto_led = false;
       led_only_table();
 }
 void felezesPopCallback(void *ptr) {
+  ledState2.setText("");
+  ledState3.setText("");
    auto_led = false;
       if (led_having == 8) {
         led_having = 0;
       }
       int led_number = led_halving_on();
-       ledSate.setText("LED: Be"+led_number);
+     char led_number_str = char(led_number);
+       ledSate.setText(led_number);
       led_having++;
 }
 void elsoInditasPopCallback(void *ptr) {
-  ledSate.setText("LED: 1Ind");
+  
+  ledSate.setText("első ");
+  ledState2.setText("inditás");
+  ledState3.setText(" móka");
     led_first_on();
 }
 
@@ -118,16 +135,18 @@ void setup() {
 autoBe.attachPop(autoBePopCallback, &autoBe);
 autoKi.attachPop(autoKiPopCallback, &autoKi);
 ledBe.attachPop(ledBePopCallback, &ledBe);
-LedKi.attachPop(LedKiPopCallback, &LedKi);
+ledKi.attachPop(ledKiPopCallback, &ledKi);
 billFelett.attachPop(billFelettPopCallback, &billFelett);
 felezes.attachPop(felezesPopCallback, &felezes);
 elsoInditas.attachPop(elsoInditasPopCallback, &elsoInditas);
 }
-void loop() {
+void loop(void) {
   led_main();
+ 
 }
 
 void led_main() {
+   nexLoop(nex_listen_list);
   String incomingString;
   if (Serial.available() > 0) {
     incomingString = Serial.read();
@@ -171,7 +190,7 @@ void led_main() {
       Serial.println("-->Automatikus led vezérlés. Led első inditás. ");
       led_first_on();
     }
-    nexLoop(nex_listen_list);
+    
   }
 
   meres = analogRead(A0);
@@ -187,7 +206,7 @@ void led_main() {
   }
 
   pixels.show();
-  delay(100);
+//  delay(100);
 }
 void led_on() {
   digitalWrite(4, HIGH);
