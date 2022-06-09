@@ -1,3 +1,4 @@
+// NX kijelző 9600 baud
 #include <Adafruit_NeoPixel.h>
 //#include <SoftwareSerial.h>
 
