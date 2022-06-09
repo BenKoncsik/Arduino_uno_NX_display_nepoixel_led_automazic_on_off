@@ -90,7 +90,7 @@ void ledKiPopCallback(void *ptr) {
 void billFelettPopCallback(void *ptr) {
   ledState1.setText("Billentyű");
   ledState2.setText("zet ");
-  ledSate2.setText("felett");
+  ledState3.setText("felett");
        auto_led = false;
       led_only_table();
 }
