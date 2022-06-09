@@ -1,5 +1,8 @@
-// NX kijelző 9600 baud
+
+
 #include <Adafruit_NeoPixel.h>
+// NX kijelző 9600 baud
+#include "Nextion.h"
 //#include <SoftwareSerial.h>
 
 //SoftwareSerial wifiSerial(5, 6); // RX, TX
@@ -34,6 +37,66 @@ float referenciaEllenalas = 10000;
 float meres;
 float ellenalas;
 float volt;
+
+//Nexon Kijelző NexText(page id, component id, component név)
+NexButton autoBe = NexButton(0, 4, "auto_be"); 
+NexButton autoKi = NexButton(0, 8, "auto_ki"); 
+NexButton ledBe = NexButton(0, 2, "led_be"); 
+NexButton LedKi = NexButton(0, 3, "led_ki"); 
+NexButton billFelett = NexButton(0, 5, "bill_felett"); 
+NexButton felezes = NexButton(0, 6, "felezes"); 
+NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
+ 
+NexText ledSate = NexText(0, 10, "led_state"); 
+
+NexTouch *nex_listen_list[] = {
+  &autoBe,
+  &autoKi,
+  &ledBe,
+  &LedKi,
+  &billFelett,
+  &felezes,
+  &elsoInditas,
+  NULL
+};
+
+void autoBePopCallback(void *ptr) {
+  ledSate.setText("LED: Auto");
+    auto_led = true;
+}
+void autoKiPopCallback(void *ptr) {
+  ledSate.setText("LED: Man");
+    auto_led = false;
+}
+void ledBePopCallback(void *ptr) {
+  ledSate.setText("LED: Be");
+       auto_led = false;
+      led_on();
+}
+void LedKiPopCallback(void *ptr) {
+  ledSate.setText("LED: Ki");
+        auto_led = false;
+      led_off();
+}
+void billFelettPopCallback(void *ptr) {
+  ledSate.setText("LED: 1Ind");
+       auto_led = false;
+      led_only_table();
+}
+void felezesPopCallback(void *ptr) {
+   auto_led = false;
+      if (led_having == 8) {
+        led_having = 0;
+      }
+      int led_number = led_halving_on();
+       ledSate.setText("LED: Be"+led_number);
+      led_having++;
+}
+void elsoInditasPopCallback(void *ptr) {
+  ledSate.setText("LED: 1Ind");
+    led_first_on();
+}
+
 void setup() {
   Serial.begin(9600);
   //  wifiSerial.begin(115200);
@@ -48,6 +111,17 @@ void setup() {
   //  sendToWifi("AT+CIPSERVER=1,80",responseTime,DEBUG); // turn on server on port 80
   // wifiSerial.print("AT+GMR");
   //  sendToUno("Wifi connection is running!",responseTime,DEBUG);
+
+
+//  NX kijelző
+  nexInit();
+autoBe.attachPop(autoBePopCallback, &autoBe);
+autoKi.attachPop(autoKiPopCallback, &autoKi);
+ledBe.attachPop(ledBePopCallback, &ledBe);
+LedKi.attachPop(LedKiPopCallback, &LedKi);
+billFelett.attachPop(billFelettPopCallback, &billFelett);
+felezes.attachPop(felezesPopCallback, &felezes);
+elsoInditas.attachPop(elsoInditasPopCallback, &elsoInditas);
 }
 void loop() {
   led_main();
@@ -97,7 +171,7 @@ void led_main() {
       Serial.println("-->Automatikus led vezérlés. Led első inditás. ");
       led_first_on();
     }
-
+    nexLoop(nex_listen_list);
   }
 
   meres = analogRead(A0);
