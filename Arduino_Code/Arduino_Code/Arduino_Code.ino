@@ -45,9 +45,9 @@ NexButton billFelett = NexButton(0, 5, "bill_felett");
 NexButton felezes = NexButton(0, 6, "felezes"); 
 NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
  
-NexText ledSate = NexText(0, 10, "led_state"); 
-NexText ledSate1 = NexText(0, 10, "led_state1"); 
-NexText ledSate2 = NexText(0, 10, "led_state2"); 
+NexText ledSate1 = NexText(0, 10, "led_state"); 
+NexText ledSate2 = NexText(0, 10, "led_state1"); 
+NexText ledSate3 = NexText(0, 10, "led_state2"); 
 
 NexTouch *nex_listen_list[] = {
   &autoBe,
@@ -62,33 +62,33 @@ NexTouch *nex_listen_list[] = {
 
 void autoBePopCallback(void *ptr) {
  
-  ledSate.setText("Automatik");
+  ledSate1.setText("Automatik");
   ledState2.setText("us");
   ledState3.setText("");
     auto_led = true;
 }
 void autoKiPopCallback(void *ptr) {
-  ledSate.setText("Manualis");
+  ledSate1.setText("Manualis");
   ledState2.setText("");
   ledState3.setText("");
     auto_led = false;
 }
 void ledBePopCallback(void *ptr) {
-  ledSate.setText("Be");
+  ledSate1.setText("Be");
   ledState2.setText("");
   ledState3.setText("");
        auto_led = false;
       led_on();
 }
 void ledKiPopCallback(void *ptr) {
-  ledSate.setText("Ki");
+  ledSate1.setText("Ki");
   ledState2.setText("");
   ledState3.setText("");
         auto_led = false;
       led_off();
 }
 void billFelettPopCallback(void *ptr) {
-  ledSate.setText("Billentyű");
+  ledSate1.setText("Billentyű");
   ledSate1.setText("zet ");
   ledSate2.setText("felett");
        auto_led = false;
@@ -103,12 +103,12 @@ void felezesPopCallback(void *ptr) {
       }
       int led_number = led_halving_on();
      char led_number_str = char(led_number);
-       ledSate.setText(led_number);
+       ledSate1.setText(led_number);
       led_having++;
 }
 void elsoInditasPopCallback(void *ptr) {
   
-  ledSate.setText("első ");
+  ledSate1.setText("első ");
   ledState2.setText("inditás");
   ledState3.setText(" móka");
     led_first_on();
