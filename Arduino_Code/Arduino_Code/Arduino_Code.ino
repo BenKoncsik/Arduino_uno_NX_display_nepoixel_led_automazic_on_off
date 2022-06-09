@@ -1,13 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 // NX kijelző 9600 baud
 #include <Nextion.h>
-//#include <SoftwareSerial.h>
-
-//SoftwareSerial wifiSerial(5, 6); // RX, TX
-
-//
-//bool DEBUG = false;
-//int responseTime = 10;
 
 #define PIN 7
 
@@ -15,7 +8,6 @@
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int delayval = 0; // timing delay in milliseconds
 
 int redColor = 255;
 int greenColor = 255;
@@ -46,8 +38,8 @@ NexButton felezes = NexButton(0, 6, "felezes");
 NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
  
 NexText ledState1 = NexText(0, 10, "led_state"); 
-NexText ledState2 = NexText(0, 13, "led_state1"); 
-NexText ledState3 = NexText(0, 14, "led_state2"); 
+NexText ledState2 = NexText(0, 13, "led_state_1"); 
+NexText ledState3 = NexText(0, 14, "led_state_2"); 
 
 NexTouch *nex_listen_list[] = {
   &autoBe,
@@ -88,48 +80,40 @@ void ledKiPopCallback(void *ptr) {
       led_off();
 }
 void billFelettPopCallback(void *ptr) {
-  ledState1.setText("Billentyű");
+  ledState1.setText("Billentyu");
   ledState2.setText("zet ");
   ledState3.setText("felett");
        auto_led = false;
       led_only_table();
 }
 void felezesPopCallback(void *ptr) {
-  ledState2.setText("");
-  ledState3.setText("");
+  ledState1.setText("Led ");
+  
    auto_led = false;
       if (led_having == 8) {
         led_having = 0;
       }
       int led_number = led_halving_on();
-     char led_number_str = char(led_number);
-       ledState1.setText(led_number);
+      String led_number_str = String(led_number);
+      char Buf[9];
+       led_number_str.toCharArray(Buf, 9);
+       ledState2.setText(Buf);
+       ledState3.setText(" villagit");
       led_having++;
 }
 void elsoInditasPopCallback(void *ptr) {
   
-  ledState1.setText("első ");
-  ledState2.setText("inditás");
-  ledState3.setText(" móka");
+  ledState1.setText("elso ");
+  ledState2.setText("inditas");
+  ledState3.setText(" moka");
     led_first_on();
 }
 
 void setup() {
   Serial.begin(9600);
-  //  wifiSerial.begin(115200);
-  // pinMode(4, OUTPUT);
   pinMode(13, OUTPUT);
   pixels.begin();
   led_first_on();
-  Serial.println("Be indult");
-  
-  // sendToWifi("AT+CWMODE=2",responseTime,DEBUG); // configure as access point
-  //  sendToWifi("AT+CIFSR",responseTime,DEBUG); // get ip address
-  //  sendToWifi("AT+CIPMUX=1",responseTime,DEBUG); // configure for multiple connections
-  //  sendToWifi("AT+CIPSERVER=1,80",responseTime,DEBUG); // turn on server on port 80
-  // wifiSerial.print("AT+GMR");
-  //  sendToUno("Wifi connection is running!",responseTime,DEBUG);
-
 
 //  NX kijelző
   nexInit();
@@ -144,11 +128,28 @@ ledState3.setText("Be indult");
 }
 void loop(void) {
   led_main();
- 
+
 }
 
 void led_main() {
-   nexLoop(nex_listen_list);
+  meres = analogRead(A0);
+  volt = meres * (5.0 / 1024.0);
+  ellenalas = volt * referenciaEllenalas / (5.0 - volt);
+
+  if (auto_led) {
+    if (ellenalas >= 11000.0) {
+      led_on();
+    } else {
+      led_off();
+    }
+  }
+    nx_touch_screen();
+  pixels.show();
+}
+void nx_touch_screen(){
+     nexLoop(nex_listen_list);
+  }
+void serial_monitor(){
   String incomingString;
   if (Serial.available() > 0) {
     incomingString = Serial.read();
@@ -194,22 +195,7 @@ void led_main() {
     }
     
   }
-
-  meres = analogRead(A0);
-  volt = meres * (5.0 / 1024.0);
-  ellenalas = volt * referenciaEllenalas / (5.0 - volt);
-
-  if (auto_led) {
-    if (ellenalas >= 11000.0) {
-      led_on();
-    } else {
-      led_off();
-    }
   }
-
-  pixels.show();
-//  delay(100);
-}
 void led_on() {
   digitalWrite(4, HIGH);
   digitalWrite(13, HIGH);
@@ -257,165 +243,3 @@ void led_first_on() {
   delay(1000);
   led_off();
 }
-//void wifi_main(){
-//   if(Serial.available()>0){
-//     String message = readSerialMessage();
-//    if(find(message,"debugEsp8266:")){
-//      String result = sendToWifi(message.substring(13,message.length()),responseTime,DEBUG);
-//      if(find(result,"OK"))
-//        sendData("\nOK");
-//      else
-//        sendData("\nEr");
-//    }
-//  }
-//  if(wifiSerial.available()>0){
-//
-//    String message = readWifiSerialMessage();
-//
-//    if(find(message,"esp8266:")){
-//       String result = sendToWifi(message.substring(8,message.length()),responseTime,DEBUG);
-//      if(find(result,"OK"))
-//        sendData("\n"+result);
-//      else
-//        sendData("\nErrRead");               //At command ERROR CODE for Failed Executing statement
-//    }else
-//    if(find(message,"HELLO")){  //receives HELLO from wifi
-//        sendData("\\nHI!");    //arduino says HI
-//    }else if(find(message,"LEDON")){
-//      //turn on built in LED:
-//      digitalWrite(13,HIGH);
-//    }else if(find(message,"LEDOFF")){
-//      //turn off built in LED:
-//      digitalWrite(13,LOW);
-//    }
-//    else{
-//      sendData("\nErrRead");                 //Command ERROR CODE for UNABLE TO READ
-//    }
-//  }
-//}
-//
-//
-//
-//
-//
-///*
-//* Name: sendData
-//* Description: Function used to send string to tcp client using cipsend
-//* Params:
-//* Returns: void
-//*/
-//void sendData(String str){
-//  String len="";
-//  len+=str.length();
-//  sendToWifi("AT+CIPSEND=0,"+len,responseTime,DEBUG);
-//  delay(100);
-//  sendToWifi(str,responseTime,DEBUG);
-//  delay(100);
-//  sendToWifi("AT+CIPCLOSE=5",responseTime,DEBUG);
-//}
-//
-//
-///*
-//* Name: find
-//* Description: Function used to match two string
-//* Params:
-//* Returns: true if match else false
-//*/
-//boolean find(String string, String value){
-//  return string.indexOf(value)>=0;
-//}
-//
-//
-///*
-//* Name: readSerialMessage
-//* Description: Function used to read data from Arduino Serial.
-//* Params:
-//* Returns: The response from the Arduino (if there is a reponse)
-//*/
-//String  readSerialMessage(){
-//  char value[100];
-//  int index_count =0;
-//  while(Serial.available()>0){
-//    value[index_count]=Serial.read();
-//    index_count++;
-//    value[index_count] = '\0'; // Null terminate the string
-//  }
-//  String str(value);
-//  str.trim();
-//  return str;
-//}
-//
-//
-//
-///*
-//* Name: readWifiSerialMessage
-//* Description: Function used to read data from ESP8266 Serial.
-//* Params:
-//* Returns: The response from the esp8266 (if there is a reponse)
-//*/
-//String  readWifiSerialMessage(){
-//  char value[100];
-//  int index_count =0;
-//  while(wifiSerial.available()>0){
-//    value[index_count]=wifiSerial.read();
-//    index_count++;
-//    value[index_count] = '\0'; // Null terminate the string
-//  }
-//  String str(value);
-//  str.trim();
-//  return str;
-//}
-//
-//
-//
-///*
-//* Name: sendToWifi
-//* Description: Function used to send data to ESP8266.
-//* Params: command - the data/command to send; timeout - the time to wait for a response; debug - print to Serial window?(true = yes, false = no)
-//* Returns: The response from the esp8266 (if there is a reponse)
-//*/
-//String sendToWifi(String command, const int timeout, boolean debug){
-//  String response = "";
-//  wifiSerial.println(command); // send the read character to the esp8266
-//  long int time = millis();
-//  while( (time+timeout) > millis())
-//  {
-//    while(wifiSerial.available())
-//    {
-//    // The esp has data so display its output to the serial window
-//    char c = wifiSerial.read(); // read the next character.
-//    response+=c;
-//    }
-//  }
-//  if(debug)
-//  {
-//    Serial.println(response);
-//  }
-//  return response;
-//}
-//
-///*
-//* Name: sendToUno
-//* Description: Function used to send data to Arduino.
-//* Params: command - the data/command to send; timeout - the time to wait for a response; debug - print to Serial window?(true = yes, false = no)
-//* Returns: The response from the esp8266 (if there is a reponse)
-//*/
-//String sendToUno(String command, const int timeout, boolean debug){
-//  String response = "";
-//  Serial.println(command); // send the read character to the esp8266
-//  long int time = millis();
-//  while( (time+timeout) > millis())
-//  {
-//    while(Serial.available())
-//    {
-//      // The esp has data so display its output to the serial window
-//      char c = Serial.read(); // read the next character.
-//      response+=c;
-//    }
-//  }
-//  if(debug)
-//  {
-//    Serial.println(response);
-//  }
-//  return response;
-//}
