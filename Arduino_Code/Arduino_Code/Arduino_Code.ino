@@ -25,8 +25,8 @@ float ellenalas;
 float volt;
 //page 0 menu
 NexSlider sliderMenu = NexSlider(0, 8, "slider");
-NexButton autoBe = NexButton(0, 2, "led_be"); 
-NexButton autoKi = NexButton(0, 3, "led_ki"); 
+NexButton ledBe_menu = NexButton(0, 2, "led_be"); 
+NexButton ledKi_menu = NexButton(0, 3, "led_ki"); 
 
 //page 1 settings
 //Nexon Kijelző NexText(page id, component id, component név)
@@ -63,6 +63,8 @@ NexTouch *nex_listen_list[] = {
   &elsoInditas,
   &slider,
   &sliderMenu,
+  &ledBe_menu,
+  &ledKi_menu,
   NULL
 };
 
@@ -74,7 +76,7 @@ void sliderMenuPopCallback(void *ptr) {
    redColor= fenyero;
    greenColor= fenyero;
    blueColor= fenyero;
-   delay(1000);
+   delay(500);
    led_off();
 
 
@@ -87,12 +89,22 @@ void sliderPopCallback(void *ptr) {
    redColor= fenyero;
    greenColor= fenyero;
    blueColor= fenyero;
-   delay(1000);
+   delay(500);
    led_off();
   
 
 }
-
+void ledBe_menuPopCallback(void *ptr) {
+       auto_led = false;
+      led_on();
+}
+void ledKi_menuPopCallback(void *ptr) {
+  ledState1.setText("Ki");
+  ledState2.setText("");
+  ledState3.setText("");
+        auto_led = false;
+      led_off();
+}
 void autoBePopCallback(void *ptr) {
   ledState1.setText("Automatik");
   ledState2.setText("us");
@@ -167,6 +179,8 @@ felezes.attachPop(felezesPopCallback, &felezes);
 elsoInditas.attachPop(elsoInditasPopCallback, &elsoInditas);
 slider.attachPop(sliderPopCallback, &slider);
 sliderMenu.attachPop(sliderMenuPopCallback, &sliderMenu);
+ledBe_menu.attachPop(ledBe_menuPopCallback, &ledBe_menu);
+ledKi_menu.attachPop(ledKi_menuPopCallback, &ledKi_menu);
 
 ledState3.setText("Be indult");
 
