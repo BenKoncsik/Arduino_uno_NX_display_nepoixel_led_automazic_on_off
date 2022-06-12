@@ -23,30 +23,35 @@ float referenciaEllenalas = 10000;
 float meres;
 float ellenalas;
 float volt;
+//page 0 menu
+NexSlider sliderMenu = NexSlider(0, 8, "slider");
+NexButton autoBe = NexButton(0, 2, "led_be"); 
+NexButton autoKi = NexButton(0, 3, "led_ki"); 
 
+//page 1 settings
 //Nexon Kijelző NexText(page id, component id, component név)
-NexButton autoBe = NexButton(0, 4, "auto_be"); 
-NexButton autoKi = NexButton(0, 8, "auto_ki"); 
-NexButton ledBe = NexButton(0, 2, "led_be"); 
-NexButton ledKi = NexButton(0, 3, "led_ki"); 
-NexButton billFelett = NexButton(0, 5, "bill_felett"); 
-NexButton felezes = NexButton(0, 6, "felezes"); 
+NexButton autoBe = NexButton(1, 4, "auto_be"); 
+NexButton autoKi = NexButton(1, 8, "auto_ki"); 
+NexButton ledBe = NexButton(1, 2, "led_be"); 
+NexButton ledKi = NexButton(1, 3, "led_ki"); 
+NexButton billFelett = NexButton(1, 5, "bill_felett"); 
+NexButton felezes = NexButton(1, 6, "felezes"); 
 
  
-NexText ledState1 = NexText(0, 10, "led_state"); 
-NexText ledState2 = NexText(0, 13, "led_state_1"); 
-NexText ledState3 = NexText(0, 14, "led_state_2"); 
+NexText ledState1 = NexText(1, 10, "led_state"); 
+NexText ledState2 = NexText(1, 13, "led_state_1"); 
+NexText ledState3 = NexText(1, 14, "led_state_2"); 
 
-//page 2 feny ero
-NexSlider slider = NexSlider(2, 3, "slider");
-//NexText fenySzazalek = NexText(2, 5, "feny_ero"); 
+//page 3 feny ero
+NexSlider slider = NexSlider(3, 3, "slider");
+//NexText fenySzazalek = NexText(3, 5, "feny_ero"); 
 
-//page 3
-NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
+//page 4 Moka
+NexButton elsoInditas = NexButton(4, 9, "elso_inditas");
  
-NexText ledState4 = NexText(3, 5, "led_state"); 
-NexText ledState5 = NexText(3, 6, "led_state_1"); 
-NexText ledState6 = NexText(3, 7, "led_state_2"); 
+NexText ledState4 = NexText(4, 5, "led_state"); 
+NexText ledState5 = NexText(4, 6, "led_state_1"); 
+NexText ledState6 = NexText(4, 7, "led_state_2"); 
 
 NexTouch *nex_listen_list[] = {
   &autoBe,
@@ -57,25 +62,34 @@ NexTouch *nex_listen_list[] = {
   &felezes,
   &elsoInditas,
   &slider,
+  &sliderMenu,
   NULL
 };
 
-/*NexRelase *nex_release_list[]{
-  &slider,
-  NULL
- };*/ 
+void sliderMenuPopCallback(void *ptr) {
+    led_on();
+    uint32_t number = 0;
+    sliderMenu.getValue(&number);
+   int fenyero = number;
+   redColor= fenyero;
+   greenColor= fenyero;
+   blueColor= fenyero;
+   delay(1000);
+   led_off();
+
+
+}
 void sliderPopCallback(void *ptr) {
+  led_on();
     uint32_t number = 0;
     slider.getValue(&number);
    int fenyero = number;
    redColor= fenyero;
    greenColor= fenyero;
    blueColor= fenyero;
-   
-    //String fenyero_str = String(fenyero);
-      //char Buf[9];
-    //   led_number_str.toCharArray(Buf, 9);
-  //fenySzazalek.setText(led_number_str+"%");
+   delay(1000);
+   led_off();
+  
 
 }
 
@@ -152,6 +166,7 @@ billFelett.attachPop(billFelettPopCallback, &billFelett);
 felezes.attachPop(felezesPopCallback, &felezes);
 elsoInditas.attachPop(elsoInditasPopCallback, &elsoInditas);
 slider.attachPop(sliderPopCallback, &slider);
+sliderMenu.attachPop(sliderMenuPopCallback, &sliderMenu);
 
 ledState3.setText("Be indult");
 
