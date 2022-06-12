@@ -1,7 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 // NX kijelző 9600 baud
 #include <Nextion.h>
-
 #define PIN 7
 
 #define NUMPIXELS 30
@@ -13,9 +12,6 @@ int redColor = 255;
 int greenColor = 255;
 int blueColor = 255;
 int green[3] = {0, 138, 5};
-int default_redColor = 125;
-int default_greenColor = 125;
-int default_blueColor = 125;
 int led_start = 5;
 int led_finish = 25;
 int led_having = 0;
@@ -35,11 +31,22 @@ NexButton ledBe = NexButton(0, 2, "led_be");
 NexButton ledKi = NexButton(0, 3, "led_ki"); 
 NexButton billFelett = NexButton(0, 5, "bill_felett"); 
 NexButton felezes = NexButton(0, 6, "felezes"); 
-NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
+
  
 NexText ledState1 = NexText(0, 10, "led_state"); 
 NexText ledState2 = NexText(0, 13, "led_state_1"); 
 NexText ledState3 = NexText(0, 14, "led_state_2"); 
+
+//page 2 feny ero
+NexSlider slider = NexSlider(2, 3, "slider");
+//NexText fenySzazalek = NexText(2, 5, "feny_ero"); 
+
+//page 3
+NexButton elsoInditas = NexButton(0, 9, "elso_inditas");
+ 
+NexText ledState4 = NexText(3, 5, "led_state"); 
+NexText ledState5 = NexText(3, 6, "led_state_1"); 
+NexText ledState6 = NexText(3, 7, "led_state_2"); 
 
 NexTouch *nex_listen_list[] = {
   &autoBe,
@@ -49,11 +56,30 @@ NexTouch *nex_listen_list[] = {
   &billFelett,
   &felezes,
   &elsoInditas,
+  &slider,
   NULL
 };
 
+/*NexRelase *nex_release_list[]{
+  &slider,
+  NULL
+ };*/ 
+void sliderPopCallback(void *ptr) {
+    uint32_t number = 0;
+    slider.getValue(&number);
+   int fenyero = number;
+   redColor= fenyero;
+   greenColor= fenyero;
+   blueColor= fenyero;
+   
+    //String fenyero_str = String(fenyero);
+      //char Buf[9];
+    //   led_number_str.toCharArray(Buf, 9);
+  //fenySzazalek.setText(led_number_str+"%");
+
+}
+
 void autoBePopCallback(void *ptr) {
- 
   ledState1.setText("Automatik");
   ledState2.setText("us");
   ledState3.setText("");
@@ -103,9 +129,9 @@ void felezesPopCallback(void *ptr) {
 }
 void elsoInditasPopCallback(void *ptr) {
   
-  ledState1.setText("elso ");
-  ledState2.setText("inditas");
-  ledState3.setText(" moka");
+  ledState4.setText("elso ");
+  ledState5.setText("inditas");
+  ledState6.setText(" moka");
     led_first_on();
 }
 
@@ -117,6 +143,7 @@ void setup() {
 
 //  NX kijelző
   nexInit();
+
 autoBe.attachPop(autoBePopCallback, &autoBe);
 autoKi.attachPop(autoKiPopCallback, &autoKi);
 ledBe.attachPop(ledBePopCallback, &ledBe);
@@ -124,7 +151,10 @@ ledKi.attachPop(ledKiPopCallback, &ledKi);
 billFelett.attachPop(billFelettPopCallback, &billFelett);
 felezes.attachPop(felezesPopCallback, &felezes);
 elsoInditas.attachPop(elsoInditasPopCallback, &elsoInditas);
+slider.attachPop(sliderPopCallback, &slider);
+
 ledState3.setText("Be indult");
+
 }
 void loop(void) {
   led_main();
@@ -148,53 +178,6 @@ void led_main() {
 }
 void nx_touch_screen(){
      nexLoop(nex_listen_list);
-  }
-void serial_monitor(){
-  String incomingString;
-  if (Serial.available() > 0) {
-    incomingString = Serial.read();
-    Serial.print("Parancs");
-    //    Serial.print(incomingString);
-    if (incomingString.equals("48")) {
-      auto_led = true;
-      Serial.println("-->Automatikus led vezérlés.");
-    }
-    if (incomingString.equals("49")) {
-      auto_led = false;
-      Serial.println("-->Manuális led vezérlés.");
-    }
-    if (incomingString.equals("50")) {
-      auto_led = false;
-      led_on();
-      Serial.println("-->Manuális led vezérlés. Bekapcsolt led!");
-    }
-    if (incomingString.equals("51")) {
-      auto_led = false;
-      led_off();
-      Serial.println("-->Manuális led vezérlés. Kikapcsolt led!");
-    }
-    if (incomingString.equals("52")) {
-      auto_led = false;
-      led_only_table();
-      Serial.println("-->Manuális led vezérlés. Csak a billentyűzet felett bekapcsolt led!");
-    }
-    if (incomingString.equals("53")) {
-      auto_led = false;
-      if (led_having == 8) {
-        led_having = 0;
-      }
-      int led_number = led_halving_on();
-      Serial.print("-->Manuális led vezérlés. Csak ");
-      Serial.print(led_number);
-      Serial.println(" darab bekapcsolt led!");
-      led_having++;
-    }
-    if (incomingString.equals("54")) {
-      Serial.println("-->Automatikus led vezérlés. Led első inditás. ");
-      led_first_on();
-    }
-    
-  }
   }
 void led_on() {
   digitalWrite(4, HIGH);
