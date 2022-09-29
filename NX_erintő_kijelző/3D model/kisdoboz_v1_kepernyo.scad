@@ -24,8 +24,8 @@ translate([10,0,65]) cube([110,layerDepth, 15]);
 // nyomtatáshoz mellé tevés
 rotate([180]){
 translate([0, 100, 0]){
-//elenorzeshez 90 megelelve 78 rajta
-//    translate([0, 0, 78]){
+//elenorzeshez 90 megelelve 80 rajta
+//    translate([0, 0, 80]){
     //teteje
 difference(){
    translate([0, 0, 0])
@@ -34,13 +34,13 @@ difference(){
     cube([110, 15, layerDepth]);
 }
 //bal elso
-    translate([2.5, 2.5, -8]) cube([5, 5, 8]);
+    translate([2.5, 2.5, -9]) cube([5, 5, 10]);
 //bal hatso
-    translate([2.5, 72.5, -8]) cube([5, 5, 8]);
+    translate([2.5, 72.5, -9]) cube([5, 5, 10]);
 //jobb elso
-    translate([122.5, 2.5, -8]) cube([5, 5, 8]);
+    translate([122.5, 2.5, -9]) cube([5, 5, 10]);
 //bal elso
-    translate([122.5, 72.5, -8]) cube([5, 5, 8]);
+    translate([122.5, 72.5, -9]) cube([5, 5, 10]);
 }
 }
 
@@ -59,22 +59,22 @@ translate([83, 60, 0]) cube([10, 10, height]);
 //bal eslo
 difference(){
     cube([10, 10, height]);
-    translate([0, 0, 80]) cube([8, 8, height-11]);
+    translate([0, 0, 70]) cube([8, 8, 11]);
 }
 //bal hatso
 difference(){
     translate([0, 70, 0]) cube([10, 10, height]);
-    translate([0, 72, 80]) cube([8, 8, height-11]);
+    translate([0, 72, 70]) cube([8, 8, 11]);
 }
 //jobb elso
 difference(){
     translate([120, 0, 0]) cube([10, 10, height]);
-    translate([122, 0, 80]) cube([8, 8, height-11]);
+    translate([122, 0, 70]) cube([8, 8, 11]);
 }
 //jobb hatso
 difference(){
     translate([120, 70, 0]) cube([10, 10, height]);
-    translate([122, 72, 80]) cube([8, 8, height-11]);
+    translate([122, 72, 70]) cube([8, 8, 11]);
 }
 //elso kis biszbasz
 translate([10, -10, 50]) cube([110, 12, 3]);
