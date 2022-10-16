@@ -21,28 +21,7 @@ cube([width, layerDepth, height]);
 translate([10,0,65]) cube([110,layerDepth, 15]);
 }
 
-// nyomtatáshoz mellé tevés
-rotate([180]){
-translate([0, 100, 0]){
-//elenorzeshez 90 megelelve 80 rajta
-//    translate([0, 0, 80]){
-    //teteje
-difference(){
-   translate([0, 0, 0])
-    cube([width, height, layerDepth]);
-    translate([10, 0, 0]) 
-    cube([110, 15, layerDepth]);
-}
-//bal elso
-    translate([2.5, 2.5, -9]) cube([5, 5, 10]);
-//bal hatso
-    translate([2.5, 72.5, -9]) cube([5, 5, 10]);
-//jobb elso
-    translate([122.5, 2.5, -9]) cube([5, 5, 10]);
-//bal elso
-    translate([122.5, 72.5, -9]) cube([5, 5, 10]);
-}
-}
+
 
 
 //belso tamasz
