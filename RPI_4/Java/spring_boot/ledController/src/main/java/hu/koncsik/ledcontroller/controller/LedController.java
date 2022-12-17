@@ -6,7 +6,11 @@
 package hu.koncsik.ledcontroller.controller;
 
 import hu.koncsik.ledcontroller.service.LedService;
+import hu.koncsik.ledcontroller.service.UsbService;
+import jdk.security.jarsigner.JarSigner;
 import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -22,18 +26,32 @@ public class LedController {
     public void setLedService(LedService ledService) {
         this.ledService = ledService;
     }
+    private UsbService usbService;
+
+    @Autowired
+    public void setUsbService(UsbService usbService) {
+        this.usbService = usbService;
+    }
 
     @GetMapping(value = "/on", produces = MediaType.APPLICATION_JSON_VALUE)
     public String on(){
         log.info("on");
-        ledService.on();
-        return "led: on";
+        usbService.on();
+        return new JSONObject().put("led", "on").toString();
     }
 
     @GetMapping(value = "/off", produces = MediaType.APPLICATION_JSON_VALUE)
     public String off(){
         log.info("off");
-        ledService.off();
-        return "led: off";
+        usbService.off();
+        return new JSONObject().put("led", "off").toString();
     }
+
+
+    @GetMapping(value = "/meres", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String measurement(){
+        log.info("measurement");
+        return new JSONObject().put("measurement", usbService.measurement()).toString();
+    }
+
 }
