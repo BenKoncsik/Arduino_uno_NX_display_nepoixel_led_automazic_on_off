@@ -5,16 +5,10 @@
  */
 package hu.koncsik.ledcontroller.service;
 
-import com.fazecast.jSerialComm.SerialPortDataListener;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.stereotype.Service;
 import com.fazecast.jSerialComm.SerialPort;
-
-import java.io.*;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -126,9 +120,7 @@ public class UsbService {
                 byte b = 51;
                 sp.getOutputStream().write(b);
                 sp.getOutputStream().flush();
-                log.info("Sent: " + 3 + " byte: " + (byte) 3);
                 Thread.sleep(1000);
-                InputStream ip;
                 if (sp.bytesAvailable() > 0){
                    mes = sp.getInputStream().read();
                 }
@@ -140,6 +132,45 @@ public class UsbService {
             }
         }
         return mes;
+    }
+
+
+    public boolean autoLed() {
+        boolean autoLedB = true;
+        try {
+            byte b = 54;
+            sp.getOutputStream().write(b);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            Thread.sleep(1000);
+            if (sp.bytesAvailable() > 0){
+                autoLedB = sp.getInputStream().read() != 0;
+            }
+            sp.getOutputStream().flush();
+        }catch (Exception e){
+            log.error("Failed communication: " + e);
+        }
+        return autoLedB;
+    }
+
+    public int setBrightness(int level){
+        if (level > 255) level = 255;
+        if (level < 0) level = 0;
+        try {
+            byte b = 55;
+            sp.getOutputStream().write(b);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().flush();
+            Thread.sleep(500);
+            sp.getOutputStream().write(level);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().flush();
+            if (sp.bytesAvailable() > 0){
+                log.info("Usb communication level: " + sp.getInputStream().read());
+            }
+        }catch (Exception e){
+            log.error("Failed communication: " + e);
+        }
+        return level;
     }
 
 }

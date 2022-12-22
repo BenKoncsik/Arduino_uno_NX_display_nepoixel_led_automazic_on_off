@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("")
@@ -47,11 +48,27 @@ public class LedController {
         return new JSONObject().put("led", "off").toString();
     }
 
-
-    @GetMapping(value = "/meres", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/measurement", produces = MediaType.APPLICATION_JSON_VALUE)
     public String measurement(){
         log.info("measurement");
         return new JSONObject().put("measurement", usbService.measurement()).toString();
     }
 
+    @GetMapping(value = "/meres", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String measurement_1(){
+        log.info("measurement");
+        return new JSONObject().put("measurement", usbService.measurement()).toString();
+    }
+
+
+
+    @GetMapping(value = "/auto", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String autoLed(){
+        return new JSONObject().put("auto_led", usbService.autoLed()).toString();
+    }
+
+    @GetMapping(value = "/feny", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String settBrightness(@RequestParam int level){
+        return new JSONObject().put("brightness", usbService.setBrightness(level)).toString();
+    }
 }
