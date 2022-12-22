@@ -8,10 +8,13 @@ package hu.koncsik.ledcontroller.service;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.stereotype.Service;
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.io.*;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -41,8 +44,15 @@ public class UsbService {
 //        Serial.print(" ");
 //        Serial.println(mes);
 //    }
-    private final SerialPort sp = SerialPort.getCommPort("COM3");
+    private SerialPort sp = null;
+
     public UsbService() {
+        SerialPort serialPorts[] = SerialPort.getCommPorts();
+        for (SerialPort sp:
+                serialPorts) {
+            if (sp.getPortDescription().equals("Arduino Uno")) this.sp = sp;
+        }
+        if (this.sp == null) log.error("No connection Arduino Uno");
         // default connection settings for Arduino
         sp.setComPortParameters(9600, Byte.SIZE, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         // block until bytes can be written
@@ -103,6 +113,11 @@ public class UsbService {
             }
         }
 
+    /**
+     * Math: min value 502.56 max: value: 176181.81
+     * only 1 byte: ((measurement + 492) [= 1000]) / 1000)
+     * @return ((measurement - 492 ) * 1000)
+     */
 
     public float measurement() {
         float mes = 0.0F;
@@ -112,9 +127,13 @@ public class UsbService {
                 sp.getOutputStream().write(b);
                 sp.getOutputStream().flush();
                 log.info("Sent: " + 3 + " byte: " + (byte) 3);
-                Thread.sleep(50);
-                InputStream ip = sp.getInputStream();
-
+                Thread.sleep(1000);
+                InputStream ip;
+                if (sp.bytesAvailable() > 0){
+                   mes = sp.getInputStream().read();
+                }
+                log.info("Measurement: " + mes);
+                mes = ((mes*1000)-482);
                 log.info("Measurement: " + mes);
             }catch (Exception e){
                 log.error("Failed communication: " + e);

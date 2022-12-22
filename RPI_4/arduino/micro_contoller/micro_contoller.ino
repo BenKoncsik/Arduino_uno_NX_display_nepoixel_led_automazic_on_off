@@ -10,7 +10,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 float referencia_resistor = 10000;
 float measurement_pin;
-float resistor;
+int resistor;
 float volt;
 float led_resistor_on = 11000.0;
 int redColor = 255;
@@ -53,18 +53,22 @@ void led_main() {
         led_off();
     }
     if (incomingByte == 51) {
-        float mes = measurement();
-        Serial.write("55");        
+        led_on();
+        Serial.flush();
+        int mes = (measurement() + 492)/1000;
+        Serial.write(mes); 
+        delay(1000);    
+        led_off();
     }
    
   }
 }
 
 
-float measurement() {
+int measurement() {
   measurement_pin = analogRead(A0);
   volt = measurement_pin * (5.0 / 1024.0);
-  resistor = volt * referencia_resistor / (5.0 - volt);
+  resistor = volt * referencia_resistor / (5 - volt);
   return resistor;
 }
 
