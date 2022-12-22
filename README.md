@@ -4,3 +4,5 @@ Arduino uno
 Resistors: 10 K 1%
 Photoewsistor:  5mm, R=8k-20k DS5-5528-LDR
 Brad bord
+
+##MTI License
