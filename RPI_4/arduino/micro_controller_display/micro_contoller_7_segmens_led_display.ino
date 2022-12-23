@@ -2,7 +2,7 @@
 
 
 //led control pin
-#define PIN 7
+//#define PIN 7
 #define PIN 13
 
 #define NUMPIXELS 30

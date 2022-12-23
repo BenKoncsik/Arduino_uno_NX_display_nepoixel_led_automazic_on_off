@@ -13,46 +13,30 @@ import com.fazecast.jSerialComm.SerialPort;
 @Service
 @Slf4j
 public class UsbService {
-//
-//    switch(incomingByte){
-//        case "1":
-//            led_on();
-//            break;
-//        case "2":
-//            led_off();
-//            break;
-//        case "3":
-//            float mes = measurement();
-//            Serial.print(mes);
-//            break;
-//        default:
-//            led_first_on();
-//    }
 
-//     if (incomingString.equals("5010")) {
-//        Serial.println(" off");
-//        led_off();
-//    }
-//    if (incomingString.equals("5110")) {
-//        float mes = measurement();
-//        Serial.print(" ");
-//        Serial.println(mes);
-//    }
     private SerialPort sp = null;
 
     public UsbService() {
+        setUsb();
+    }
+
+    public boolean setUsb(){
         SerialPort serialPorts[] = SerialPort.getCommPorts();
         for (SerialPort sp:
                 serialPorts) {
             if (sp.getPortDescription().equals("Arduino Uno")) this.sp = sp;
         }
-        if (this.sp == null) log.error("No connection Arduino Uno");
-        // default connection settings for Arduino
-        sp.setComPortParameters(9600, Byte.SIZE, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
-        // block until bytes can be written
-        sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
-        openPort();
-
+        if (this.sp == null){
+            log.error("No connection Arduino Uno");
+            return false;
+        }else {
+            // default connection settings for Arduino
+            sp.setComPortParameters(9600, Byte.SIZE, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+            // block until bytes can be written
+            sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
+            openPort();
+            return true;
+        }
     }
 
     public boolean closePort(){
@@ -66,7 +50,6 @@ public class UsbService {
         }
     }
 
-
     public boolean openPort(){
         if (sp.openPort()) {
             log.info("Port open!");
@@ -77,8 +60,6 @@ public class UsbService {
         }
     }
 
-
-
     public void on() {
             try {
                 byte b = 49;
@@ -87,9 +68,18 @@ public class UsbService {
                 sp.getOutputStream().flush();
                 log.info("Sent: " + 1 + " byte: " + (byte) 1);
                 Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
-//                log.info(String.valueOf(sp.getInputStream().read()));
+                if (sp.bytesAvailable() > 0){
+                    log.info("Usb communication return: " + sp.getInputStream().read());
+                }
             }catch (Exception e){
-                log.error("Failed communication: " + e);
+                log.error("Failed communication not found Arduino Uno!");
+                log.error("Find Arduino uno: ");
+                if (setUsb()) {
+                    log.info("Successful solution!");
+                    on();
+                } else{
+                    log.error("Big problem: " + e);
+                }
             }
         }
 
@@ -102,8 +92,19 @@ public class UsbService {
                 log.info("Sent: " + 2 + " byte: " + (byte) 2);
                 Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
                 sp.getOutputStream().flush();
+                if (sp.bytesAvailable() > 0){
+                    log.info("Usb communication retur: " + sp.getInputStream().read());
+                }
+
             }catch (Exception e){
-                log.error("Failed communication: " + e);
+                log.error("Failed communication not found Arduino Uno!");
+                log.error("Find Arduino uno: ");
+                if (setUsb()) {
+                    log.info("Successful solution!");
+                    off();
+                } else{
+                    log.error("Big problem: " + e);
+                }
             }
         }
 
@@ -147,7 +148,14 @@ public class UsbService {
             }
             sp.getOutputStream().flush();
         }catch (Exception e){
-            log.error("Failed communication: " + e);
+            log.error("Failed communication not found Arduino Uno!");
+            log.error("Find Arduino uno: ");
+            if (setUsb()) {
+                log.info("Successful solution!");
+                autoLed();
+            } else{
+                log.error("Big problem: " + e);
+            }
         }
         return autoLedB;
     }
@@ -159,8 +167,6 @@ public class UsbService {
             byte b = 55;
             sp.getOutputStream().write(b);
             Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
-            sp.getOutputStream().flush();
-            Thread.sleep(500);
             sp.getOutputStream().write(level);
             Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
             sp.getOutputStream().flush();
@@ -168,7 +174,14 @@ public class UsbService {
                 log.info("Usb communication level: " + sp.getInputStream().read());
             }
         }catch (Exception e){
-            log.error("Failed communication: " + e);
+            log.error("Failed communication not found Arduino Uno!");
+            log.error("Find Arduino uno: ");
+            if (setUsb()) {
+                log.info("Successful solution!");
+                setBrightness(level);
+            } else{
+                log.error("Big problem: " + e);
+            }
         }
         return level;
     }

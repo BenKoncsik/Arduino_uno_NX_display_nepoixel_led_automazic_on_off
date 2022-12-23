@@ -2,8 +2,7 @@
 
 
 //led control pin
-//#define PIN 7
-#define PIN 13
+#define PIN 7
 
 #define NUMPIXELS 30
 
@@ -16,23 +15,23 @@ float volt;
 float led_resistor_on = 11000.0;
 
 // red, green, blue
-int color[3] = {255, 255, 255};
+int color[3] = { 255, 255, 255 };
 int green[3] = { 0, 138, 5 };
 int led_first = 5;
 int led_last = 25;
 bool led_light = false;
 bool auto_led = true;
- 
+
 
 
 
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(50);
-  //pinMode(13, OUTPUT);
-  //digitalWrite(13, HIGH);
-  //delay(1000);
-  //digitalWrite(13, LOW);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
   pixels.begin();
   led_first_on();
 }
@@ -44,62 +43,51 @@ void led_main() {
   int incomingInt = 0;
   byte incomingByte = 0;
   if (Serial.available() > 0) {
-    incomingByte  = Serial.read();
+    incomingByte = Serial.read();
 
-    if (incomingByte == 49 ) {
+    if (incomingByte == 49) {
       Serial.write(incomingByte);
-      Serial.flush();
       led_on();
+      
     }
 
-     if (incomingByte == 50) {
-        Serial.write(incomingByte);
-        led_off();
+    if (incomingByte == 50) {
+      Serial.write(incomingByte);
+      led_off();
+      
     }
     if (incomingByte == 51) {
-        Serial.flush();
-        int mes = (measurement() + 492)/1000;
-        Serial.write(mes);
+      Serial.flush();
+      int mes = (measurement() + 492) / 1000;
+      Serial.write(mes);
     }
 
-        if (incomingByte == 54) {          
-          auto_led = !auto_led;
-          Serial.write(auto_led); 
-          Serial.flush();
-          Serial.begin(9600);
-   
+    if (incomingByte == 54) {
+      Serial.flush();
+      auto_led = !auto_led;
+      Serial.write(auto_led);
     }
 
     if (incomingByte == 55) {
-      displayNumbber(99);
-        displayNumbber(0);
-        displayNumbber(99);
       Serial.flush();
       int level = 0;
-      delay(1000);
-      clearSerialBuffer(); 
-     if(Serial.available() > 0){
-        level = Serial.read();
-        displayNumbber(99);
-        displayNumbber(level);
-        Serial.write(level);      
-        for(int i = 0; i < 3; i++){
-          color[i] = level;
-        }
-        if(led_light){
-          led_on();
-        }
+      delay(500);
+      level = Serial.read();
+      Serial.write(level);
+      for (int i = 0; i < 3; i++) {
+        color[i] = level;
       }
-      delay(100);
+      if (led_light) {
+        led_on();
+      }
     }
-   clearSerialBuffer();
   }
 }
 
-void clearSerialBuffer(){
-    while(Serial.available() > 0){
-      Serial.read();
-    }
+void clearSerialBuffer() {
+  while (Serial.available() > 0) {
+    Serial.read();
+  }
 }
 
 int measurement() {
@@ -110,7 +98,7 @@ int measurement() {
 }
 
 void led_on() {
-  //digitalWrite(13, HIGH);
+  digitalWrite(13, HIGH);
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(color[0], color[1], color[2]));
     pixels.show();
@@ -118,7 +106,7 @@ void led_on() {
   led_light = true;
 }
 void led_off() {
- // digitalWrite(13, LOW);
+  digitalWrite(13, LOW);
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.clear();
     pixels.show();
