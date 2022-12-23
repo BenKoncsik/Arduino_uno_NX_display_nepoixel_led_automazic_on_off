@@ -82,6 +82,19 @@ void led_main() {
       }
     }
   }
+      if (incomingByte == 56) {     
+      int clorComponent = 0;         
+       for (int i = 0; i < 3; i++) {
+        Serial.flush();
+        delay(500);
+        clorComponent = Serial.read();
+        Serial.write(clorComponent);
+        color[i] = clorComponent;
+      }
+      if (led_light) {
+        led_on();
+      }
+    }
 }
 
 void clearSerialBuffer() {

@@ -129,7 +129,14 @@ public class UsbService {
                 mes = ((mes*1000)-482);
                 log.info("Measurement: " + mes);
             }catch (Exception e){
-                log.error("Failed communication: " + e);
+                log.error("Failed communication not found Arduino Uno!");
+                log.error("Find Arduino uno: ");
+                if (setUsb()) {
+                    log.info("Successful solution!");
+                    measurement();
+                } else{
+                    log.error("Big problem: " + e);
+                }
             }
         }
         return mes;
@@ -186,4 +193,44 @@ public class UsbService {
         return level;
     }
 
+    public int[] setColor(int red,int green,int blue){
+        if (red > 255) red = 255;
+        if (red < 0) red = 0;
+        if (green > 255) red = 255;
+        if (green < 0) red = 0;
+        if (blue > 255) red = 255;
+        if (blue < 0) red = 0;
+        int[] color = {red, green, blue};
+        try {
+            byte b = 56;
+            sp.getOutputStream().write(b);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            for (int colorComponent: color) {
+                sp.getOutputStream().write(colorComponent);
+                Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+                sp.getOutputStream().flush();
+                if (sp.bytesAvailable() > 0){
+                    log.info("Usb communication color component: "+ colorComponent + " = " + sp.getInputStream().read());
+                }
+            }
+
+
+            sp.getOutputStream().write(red);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().flush();
+            if (sp.bytesAvailable() > 0){
+                log.info("Usb communication level: " + sp.getInputStream().read());
+            }
+        }catch (Exception e){
+            log.error("Failed communication not found Arduino Uno!");
+            log.error("Find Arduino uno: ");
+            if (setUsb()) {
+                log.info("Successful solution!");
+                setBrightness(red);
+            } else{
+                log.error("Big problem: " + e);
+            }
+        }
+        return color;
+    }
 }

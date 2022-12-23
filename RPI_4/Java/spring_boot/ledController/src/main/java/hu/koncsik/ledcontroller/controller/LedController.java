@@ -54,21 +54,20 @@ public class LedController {
         return new JSONObject().put("measurement", usbService.measurement()).toString();
     }
 
-    @GetMapping(value = "/meres", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String measurement_1(){
-        log.info("measurement");
-        return new JSONObject().put("measurement", usbService.measurement()).toString();
-    }
-
-
-
     @GetMapping(value = "/auto", produces = MediaType.APPLICATION_JSON_VALUE)
     public String autoLed(){
         return new JSONObject().put("auto_led", usbService.autoLed()).toString();
     }
 
-    @GetMapping(value = "/feny", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/brightness", produces = MediaType.APPLICATION_JSON_VALUE)
     public String settBrightness(@RequestParam int level){
         return new JSONObject().put("brightness", usbService.setBrightness(level)).toString();
     }
+
+    @GetMapping(value = "/color", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String color(@RequestParam int r,@RequestParam int g,@RequestParam int b){
+        return new JSONObject().put("brightness", usbService.setColor(r,g,b)).toString();
+    }
+
+
 }
