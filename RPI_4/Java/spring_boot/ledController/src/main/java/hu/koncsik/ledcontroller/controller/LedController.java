@@ -69,5 +69,10 @@ public class LedController {
         return new JSONObject().put("brightness", usbService.setColor(r,g,b)).toString();
     }
 
+    @GetMapping(value = "/color/brightness", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String color(@RequestParam int level){
+        return new JSONObject().put("brightness", usbService.setColorBrightness(level)).toString();
+    }
+
 
 }

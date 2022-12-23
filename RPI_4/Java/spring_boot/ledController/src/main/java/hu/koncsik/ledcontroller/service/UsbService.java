@@ -233,4 +233,30 @@ public class UsbService {
         }
         return color;
     }
+
+    public int setColorBrightness(int level){
+        if (level > 100) level = 100;
+        if (level < 0) level = 0;
+        try {
+            byte b = 57;
+            sp.getOutputStream().write(b);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().write(level);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().flush();
+            if (sp.bytesAvailable() > 0){
+                log.info("Usb communication level: " + sp.getInputStream().read());
+            }
+        }catch (Exception e){
+            log.error("Failed communication not found Arduino Uno!");
+            log.error("Find Arduino uno: ");
+            if (setUsb()) {
+                log.info("Successful solution!");
+                setBrightness(level);
+            } else{
+                log.error("Big problem: " + e);
+            }
+        }
+        return level;
+    }
 }

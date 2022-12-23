@@ -48,13 +48,11 @@ void led_main() {
     if (incomingByte == 49) {
       Serial.write(incomingByte);
       led_on();
-      
     }
 
     if (incomingByte == 50) {
       Serial.write(incomingByte);
       led_off();
-      
     }
     if (incomingByte == 51) {
       Serial.flush();
@@ -81,10 +79,10 @@ void led_main() {
         led_on();
       }
     }
-  }
-      if (incomingByte == 56) {     
-      int clorComponent = 0;         
-       for (int i = 0; i < 3; i++) {
+
+    if (incomingByte == 56) {
+      int clorComponent = 0;
+      for (int i = 0; i < 3; i++) {
         Serial.flush();
         delay(500);
         clorComponent = Serial.read();
@@ -95,6 +93,23 @@ void led_main() {
         led_on();
       }
     }
+
+    if (incomingByte == 57) {
+      Serial.flush();
+      int level_read = 0;
+      delay(500);
+      level_read = Serial.read();
+      Serial.write(level_read);
+      float level = 100 / level_read;
+
+      for (int i = 0; i < 3; i++) {
+        color[i] = color[i] * level;
+      }
+      if (led_light) {
+        led_on();
+      }
+    }
+  }
 }
 
 void clearSerialBuffer() {
