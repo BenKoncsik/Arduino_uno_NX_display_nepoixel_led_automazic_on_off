@@ -5,15 +5,11 @@
  */
 package hu.koncsik.ledcontroller.controller;
 
-import hu.koncsik.ledcontroller.service.LedService;
 import hu.koncsik.ledcontroller.service.UsbService;
-import jdk.security.jarsigner.JarSigner;
 import lombok.extern.slf4j.Slf4j;
-import netscape.javascript.JSObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,12 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("")
 @Slf4j
 public class LedController {
-    private LedService ledService;
-
-    @Autowired
-    public void setLedService(LedService ledService) {
-        this.ledService = ledService;
-    }
     private UsbService usbService;
 
     @Autowired
@@ -34,9 +24,14 @@ public class LedController {
         this.usbService = usbService;
     }
 
+    public static boolean auto_led = true;
+    public static boolean power = false;
+    public static int brightness  = 255;
+
     @GetMapping(value = "/on", produces = MediaType.APPLICATION_JSON_VALUE)
     public String on(){
         log.info("on");
+        power = true;
         usbService.on();
         return new JSONObject().put("led", "on").toString();
     }
@@ -44,6 +39,7 @@ public class LedController {
     @GetMapping(value = "/off", produces = MediaType.APPLICATION_JSON_VALUE)
     public String off(){
         log.info("off");
+        power = false;
         usbService.off();
         return new JSONObject().put("led", "off").toString();
     }
@@ -56,12 +52,14 @@ public class LedController {
 
     @GetMapping(value = "/auto", produces = MediaType.APPLICATION_JSON_VALUE)
     public String autoLed(){
-        return new JSONObject().put("auto_led", usbService.autoLed()).toString();
+        auto_led  = usbService.autoLed();
+        return new JSONObject().put("auto_led", auto_led).toString();
     }
 
     @GetMapping(value = "/brightness", produces = MediaType.APPLICATION_JSON_VALUE)
     public String settBrightness(@RequestParam int level){
-        return new JSONObject().put("brightness", usbService.setBrightness(level)).toString();
+        brightness = usbService.setBrightness(level);
+        return new JSONObject().put("brightness", brightness).toString();
     }
 
     @GetMapping(value = "/color", produces = MediaType.APPLICATION_JSON_VALUE)

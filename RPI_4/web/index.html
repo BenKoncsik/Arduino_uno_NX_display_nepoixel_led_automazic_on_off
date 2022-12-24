@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="http://koncsik.hopto.org/benedek/img_other/canary.jpg">
+    <link rel="stylesheet" href="style/index.css">
+    <title>SDLC by Koncsik</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css">
+</head>
+<body onload="start_sett()">
+
+<div class="main-container">
+    <div class="heading">
+        <h1 class="heading__title">Smart Desk Lamp Control </h1>
+        <p class="heading__credits"><a class="heading__link" target="_blank"
+                                       href="https://github.com/Koncsik-cyber/Arduino_uno_NX_display_nepoixel_led_automazic_on_off">Power by Koncsik Benedek</a></p>
+    </div>
+    <div class="cards">
+        <div class="card card-1" id="switch">
+            <div class="card__icon"></div>
+            <p class="card__exit"></p>
+            <h2 class="card__title card__link_h2">Lamp on</h2>
+            <p class="card__apply">
+                <span class="card__link"></span>
+            </p>
+        </div>
+
+        <div class="card card-2" id="auto">
+            <div class="card__icon"><i class="fas fa-bolt"></i></div>
+            <p class="card__exit"><i class="fas fa-times"></i></p>
+            <h2 class="card__title card__link_h2">Automatic Lamp</h2>
+            <p class="card__apply">
+                <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+
+        <div class="card card-3" id="white_brightness">
+            <div class="card__icon"><i class="fas fa-bolt"></i></div>
+            <p class="card__exit"><i class="fas fa-times"></i></p>
+            <h2 class="card__title card__link_h2">White brightness Setting
+                <input type="range" class="card__range" value="0" min="0" max="255" id="white_brightness_range">
+                <div class="card__range_val" id="h4-container"><div id="h4-subcontainer"><h4 id="white_brightness_value">0<span></span></h4></div></div>
+                <a href="#" class="button_a" id="white_brightness_button">
+                    <span>set</span>
+                    <div class="liquid"></div>
+                </a>
+            </h2>
+
+
+            <p class="card__apply">
+                <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+        <div class="card card-4">
+            <div class="card__icon"><i class="fas fa-bolt"></i></div>
+            <p class="card__exit"><i class="fas fa-times"></i></p>
+            <h2 class="card__title card__link_h2">Color setting (coming soon).</h2>
+            <p class="card__apply">
+                <span class="card__link" ><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+        <div class="card card-5">
+            <div class="card__icon"><i class="fas fa-bolt"></i></div>
+            <p class="card__exit"><i class="fas fa-times"></i></p>
+            <h2 class="card__title card__link_h2">Color brightness(coming soon).</h2>
+            <p class="card__apply">
+                <span class="card__link" ><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+        <div class="card card-1">
+            <div class="card__icon"><i class="fas fa-bolt"></i></div>
+            <p class="card__exit"><i class="fas fa-times"></i></p>
+            <h2 class="card__title card__link_h2">Mesurment (coming soon).</h2>
+            <p class="card__apply">
+                <span class="card__link" ><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+
+        <div class="card card-6" id="settings">
+            <div class="card__icon"></div>
+            <p class="card__exit"></i></p>
+            <h2 class="card__title card__link_h2">Background</h2>
+            <p class="card__apply">
+                <span class="card__link" ><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+    </div>
+</div>
+<footer>
+    <span>V 1.0 Koncsik Benedek</span>
+</footer>
+
+<meta name="designer: Eric Mahoney --> UI: Gradient Banner Cards" content="https://codepen.io/ericmahoney/pen/oNLMOYw">
+<meta name="icon_description" content="http://koncsik.hopto.org/benedek/img_other/icon.gif">
+<meta name="warrant_canary" content="http://koncsik.hopto.org/benedek/img_other/antihere.gif">
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script type="application/javascript" src="javascript/index.js"></script>
+
+</html>

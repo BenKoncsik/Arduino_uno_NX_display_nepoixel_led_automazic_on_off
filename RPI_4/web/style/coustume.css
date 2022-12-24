@@ -1,0 +1,47 @@
+.heading{
+    /*height: 500px;*/
+}
+.card__link_h2{
+    position: relative;
+    text-decoration: none;
+}
+
+.card__link_h2::after {
+    position: absolute;
+    top: 35px;
+    left: 0;
+    content: "";
+    width: 0%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.6);
+    transition: all 0.5s;
+}
+
+
+.card__link_h2:hover::after{
+    width: 100%;
+}
+
+.card__title input{
+    width: 100%;
+}
+
+
+.card__range{
+    position: relative;
+}
+.card__range_val{
+    position: absolute;
+    z-index: 2;
+    padding-left: 10px;
+}
+
+#white_brightness_range{
+    width: 100%;
+    height: 50px;
+}
+
+.button_a span{
+    /*margin-left: -42px;*/
+}
+
