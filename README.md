@@ -8,4 +8,4 @@
 <li> Brad bord
   
 
-<br> MTI License
+<br> MIT License
