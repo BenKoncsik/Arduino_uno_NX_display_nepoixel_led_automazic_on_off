@@ -27,6 +27,10 @@ public class LedController {
     public static boolean auto_led = true;
     public static boolean power = false;
     public static int brightness  = 255;
+    public static int[] color  ={255,255,255};
+    public static int colorBrightness = 100;
+    public static int autoLedOnBrightness = 11000;
+
 
     @GetMapping(value = "/on", produces = MediaType.APPLICATION_JSON_VALUE)
     public String on(){
@@ -64,13 +68,20 @@ public class LedController {
 
     @GetMapping(value = "/color", produces = MediaType.APPLICATION_JSON_VALUE)
     public String color(@RequestParam int r,@RequestParam int g,@RequestParam int b){
-        return new JSONObject().put("brightness", usbService.setColor(r,g,b)).toString();
+        color = usbService.setColor(r,g,b);
+        return new JSONObject().put("brightness", color).toString();
     }
 
     @GetMapping(value = "/color/brightness", produces = MediaType.APPLICATION_JSON_VALUE)
     public String color(@RequestParam int level){
-        return new JSONObject().put("brightness", usbService.setColorBrightness(level)).toString();
+        colorBrightness = usbService.setColorBrightness(level);
+        return new JSONObject().put("brightness", colorBrightness).toString();
     }
 
+    @GetMapping(value = "auto/brightness", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String autoLedBrightness(@RequestParam int level){
+        autoLedOnBrightness = usbService.setOnAutoLevel(level);
+        return new JSONObject().put("brightness", autoLedOnBrightness).toString();
+    }
 
 }

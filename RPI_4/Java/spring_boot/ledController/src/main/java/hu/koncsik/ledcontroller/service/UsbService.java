@@ -154,6 +154,7 @@ public class UsbService {
                 autoLedB = sp.getInputStream().read() != 0;
             }
             sp.getOutputStream().flush();
+            log.info("auto led: " + autoLedB);
         }catch (Exception e){
             log.error("Failed communication not found Arduino Uno!");
             log.error("Find Arduino uno: ");
@@ -253,6 +254,36 @@ public class UsbService {
             if (setUsb()) {
                 log.info("Successful solution!");
                 setBrightness(level);
+            } else{
+                log.error("Big problem: " + e);
+            }
+        }
+        return level;
+    }
+
+
+    public int setOnAutoLevel(int level){
+        level = 255-level;
+        if (level > 255) level = 255;
+        if (level < 0) level = 0;
+        try {
+            byte b = 58;
+            sp.getOutputStream().write(b);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().write(level);
+            Thread.sleep(SerialPort.TIMEOUT_WRITE_BLOCKING);
+            sp.getOutputStream().flush();
+            if (sp.bytesAvailable() > 0){
+                int response = sp.getInputStream().read();
+                log.info("Usb communication set on auto led is on: " + response + "-->" + ((response * 690.9090588) - 502.56));
+
+            }
+        }catch (Exception e){
+            log.error("Failed communication not found Arduino Uno!");
+            log.error("Find Arduino uno: ");
+            if (setUsb()) {
+                log.info("Successful solution!");
+                setOnAutoLevel(level);
             } else{
                 log.error("Big problem: " + e);
             }

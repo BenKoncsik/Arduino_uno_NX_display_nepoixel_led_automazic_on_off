@@ -30,7 +30,9 @@ a .liquid {
     box-shadow: inset 0 0 50px rgba(0, 0, 0, .5);
     transition: .5s;
 }
-
+#auto_led_button_color{
+    background: radial-gradient(#1fe4f5, #3fbafe);
+}
 a .liquid::after,
 a .liquid::before {
     content: '';

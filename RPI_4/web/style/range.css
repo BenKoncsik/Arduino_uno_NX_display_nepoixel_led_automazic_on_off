@@ -75,7 +75,8 @@ html input[type="range"]::-ms-fill-lower {
 html input[type="range"]::-ms-fill-upper {
     background-color: #76b2fe;
 }
-#h4-container {
+#h4-container,
+#h4-container_auto {
     width: 400px;
     max-width: 100%;
     padding-left: 45px;
@@ -83,11 +84,13 @@ html input[type="range"]::-ms-fill-upper {
     box-sizing: border-box;
     position: relative;
 }
-#h4-container #h4-subcontainer {
+#h4-container #h4-subcontainer,
+#h4-container_auto #h4-subcontainer_auto {
     width: 120%;
     position: relative;
 }
-#h4-container #h4-subcontainer h4 {
+#h4-container #h4-subcontainer h4,
+#h4-container_auto #h4-subcontainer_auto h4 {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +104,8 @@ html input[type="range"]::-ms-fill-upper {
     transform: translateX(-50%);
     transition: margin-top 0.15s ease-in-out, opacity 0.15s ease-in-out;
 }
-#h4-container #h4-subcontainer h4 span {
+#h4-container #h4-subcontainer h4 span,
+#h4-container_auto #h4-subcontainer_auto h4 span {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -112,8 +116,10 @@ html input[type="range"]::-ms-fill-upper {
     transform: rotate(45deg);
     z-index: -1;
 }
-input:not(:active) + #h4-container h4 {
+input:not(:active) + #h4-container h4,
+input:not(:active) + #h4-container_auto h4 {
     opacity: 0;
     margin-top: -45px;
     pointer-events: none;
 }
+

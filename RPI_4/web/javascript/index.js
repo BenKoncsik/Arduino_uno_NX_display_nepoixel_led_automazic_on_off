@@ -1,10 +1,13 @@
-let url = "http://192.168.2.8:8003/"
-let debug = false;
+// let url = "http://192.168.2.8:8003/"
+let url = "http://localhost:8080/"
+let debug = true;
 
 
 let lamp_state = false;
 let lamp_auto = true;
 let brightness = 255;
+let auto_led_brightness = 11000;
+
 
 let background = 1;
 
@@ -15,9 +18,9 @@ let bug_icon = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"
 
 
 $("#white_brightness").change(function() {
-    var rangePercent = $('#white_brightness_range').val();
+    let rangePercent = $('#white_brightness_range').val();
     $('#white_brightness_range').on('change input', function() {
-        rangePercent = $('[type="range"]').val();
+        rangePercent = $('#white_brightness_range').val();
         let precent  = rangePercent/2.55
         $('#white_brightness_value').html( Math.ceil(precent)+'<span></span>');
         $('#white_brightness_range, #white_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
@@ -30,6 +33,24 @@ $("#white_brightness_button").click(async function (){
     let debug_element = document.getElementById("white_brightness").getElementsByClassName("card__link")[0];
     await request("brightness?level="+$("#white_brightness_range").val(), debug_element)
 });
+
+$("#auto_led_brightness").change(function() {
+    let rangePercent = $('#auto_led_brightness_range').val();
+    $('#auto_led_brightness_range').on('change input', function() {
+        rangePercent = $('#auto_led_brightness_range').val();
+        let precent  = rangePercent/2.55
+        $('#auto_led_brightness_value').html( Math.ceil(precent)+'<span></span>');
+        $('#auto_led_brightness_range, #auto_led_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
+
+        $('#auto_led_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(rangePercent/100)) + ')', 'left': precent +'%'});
+        // $('#white_brightness_value').css({'transform': 'translateX(-50%) scale(' + (1+(rangePercent/100)) + ')', 'left': rangePercent+'%'});
+    });
+});
+$("#auto_led_brightness_button").click(async function (){
+    let debug_element = document.getElementById("auto_led_brightness").getElementsByClassName("card__link")[0];
+    await request("auto/brightness?level="+$("#auto_led_brightness_range").val(), debug_element)
+});
+
 $("#switch").click(async function (){
     let text = document.getElementById("switch").getElementsByClassName("card__title")[0]
     let debug_element = document.getElementById("switch").getElementsByClassName("card__link")[0];
@@ -58,6 +79,8 @@ $("#auto").click(async function (){
 
 
 
+
+
 async function request(command, debug_element){
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url+command, true);
@@ -82,28 +105,45 @@ async function start_sett() {
     if (debug) {
         console.log("status_run")
     }
+    cookie();
     sett_status();
     document.getElementById("settings").getElementsByClassName("card__icon")[0].innerHTML = background;
     console.log(brightness)
 
     // 5 secund update
     // setInterval(sett_status, 60000);
-    setInterval(sett_status, 5000);
+    setInterval(sett_status, 10000);
 }
 async function sett_status(){
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", url+"status/power", true);
+    xhr.open("GET", url+"status", true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            lamp_state = JSON.parse(xhr.responseText).power;
-
+            let response = JSON.parse(xhr.responseText)
+            lamp_state = response.power;
             let text = document.getElementById("switch").getElementsByClassName("card__title")[0]
             if (lamp_state){
                 text.innerHTML = "Lamp on";
             }else {
                 text.innerHTML = "Lamp off";
             }
+            lamp_auto = response.auto;
+            text = document.getElementById("auto").getElementsByClassName("card__title")[0]
+            if (lamp_auto){
+                text.innerHTML = "Manual Lamp";
+            }else {
+                text.innerHTML = "Automatic Lamp";
+            }
+            brightness = response.brightness;
+            document.getElementById("white_brightness_range").value = brightness;
+            let precent  = brightness/2.55;
+            $('#white_brightness_value').html( Math.ceil(precent)+'<span></span>');
+            $('#white_brightness_range, #white_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
+            $('#white_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(brightness/100)) + ')', 'left': precent +'%'});
+
+            auto_led_brightness = response.auto_led_brightness;
+
             if (debug){
                 console.log(lamp_state)
                 console.log("response: " + xhr.responseText);
@@ -114,60 +154,15 @@ async function sett_status(){
             }
         }
     };
+
     xhr.send();
 
-    let xhr1 = new XMLHttpRequest();
-    xhr1.open("GET", url+"status/auto", true);
-    xhr1.setRequestHeader("Content-Type", "application/json");
-    xhr1.onreadystatechange = function () {
-        if (xhr1.readyState === 4 && xhr1.status === 200) {
-            lamp_auto = JSON.parse(xhr1.responseText).auto;
-            let text = document.getElementById("auto").getElementsByClassName("card__title")[0]
-            if (lamp_auto){
-                text.innerHTML = "Manual Lamp";
-            }else {
-                text.innerHTML = "Automatic Lamp";
-            }
-            if (debug){
-                console.log(lamp_auto);
-                console.log("response: " + xhr1.responseText);
-            }
-        }else {
-            if (debug){
-                console.log("response: " + xhr1.status);
-            }
-        }
-    };
-    xhr1.send();
-
-    let xhr2 = new XMLHttpRequest();
-    xhr2.open("GET", url+"status/brightness", true);
-    xhr2.setRequestHeader("Content-Type", "application/json");
-    xhr2.onreadystatechange = function () {
-        if (xhr2.readyState === 4 && xhr2.status === 200) {
-            brightness = JSON.parse(xhr2.responseText).brightness;
-            document.getElementById("white_brightness_range").value = brightness;
-            let precent  = brightness/2.55
-            $('#white_brightness_value').html( Math.ceil(precent)+'<span></span>');
-            $('#white_brightness_range, #white_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
-            $('#white_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(brightness/100)) + ')', 'left': precent +'%'});
-
-            if (debug){
-                console.log(brightness)
-                console.log("response: " + xhr2.responseText);
-            }
-        }else {
-            if (debug){
-                console.log("response: " + xhr2.status);
-            }
-        }
-    };
-    xhr2.send();
 }
 
 
 $("#settings").click(function (){
     let body = document.getElementsByTagName("body")[0];
+    let h1 = document.getElementsByTagName("h1")[0];
     background++;
     if (background > 4) background = 1;
     if(debug) {
@@ -177,19 +172,27 @@ $("#settings").click(function (){
         case 1:
             body.style.background = "#fff";
             body.style.color = "#333";
+            h1.style.color = "#333"
         break;
         case 2:
             body.style.background = "black";
             body.style.color = "#fff";
+            h1.style.color = "white"
         break;
         case 3:
             body.style.background = "#444444";
             body.style.color = "#fff";
+            h1.style.color = "white"
         break;
         case 4:
             body.style.background = "#f7a3b5";
             body.style.color = "#fff";
+            h1.style.color = "white"
         break;
     }
     document.getElementById("settings").getElementsByClassName("card__icon")[0].innerHTML = background;
 });
+
+function cookie(){
+
+}

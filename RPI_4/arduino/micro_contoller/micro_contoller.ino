@@ -12,7 +12,7 @@ float referencia_resistor = 10000;
 float measurement_pin;
 int resistor;
 float volt;
-float led_resistor_on = 11000.0;
+int led_resistor_on = 11000;
 
 // red, green, blue
 int color[3] = { 255, 255, 255 };
@@ -40,6 +40,7 @@ void loop(void) {
   led_main();
 }
 void led_main() {
+  auto_led_switch();
   int incomingInt = 0;
   byte incomingByte = 0;
   if (Serial.available() > 0) {
@@ -110,7 +111,17 @@ void led_main() {
       }
     }
   }
+
+  if (incomingByte == 58) {
+    Serial.flush();
+    int read_led = 0;
+    delay(500);
+    read_led = Serial.read();
+    Serial.write(read_led);
+    led_resistor_on = ((read_led *  690.9090588) - 502.56);
+  }
 }
+
 
 void clearSerialBuffer() {
   while (Serial.available() > 0) {
@@ -160,4 +171,14 @@ void led_first_on() {
   led_on();
   delay(1000);
   led_off();
+}
+
+void auto_led_switch() {
+  if (auto_led) {
+    if (resistor >= led_resistor_on) {
+      led_on();
+    } else {
+      led_off();
+    }
+  }
 }
