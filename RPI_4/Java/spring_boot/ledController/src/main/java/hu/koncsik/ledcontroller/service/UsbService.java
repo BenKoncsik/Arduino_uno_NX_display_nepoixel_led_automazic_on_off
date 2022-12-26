@@ -21,9 +21,8 @@ public class UsbService {
     }
 
     public boolean setUsb(){
-        SerialPort serialPorts[] = SerialPort.getCommPorts();
-        for (SerialPort sp:
-                serialPorts) {
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+        for (SerialPort sp: serialPorts) {
             if (sp.getPortDescription().equals("Arduino Uno")) this.sp = sp;
         }
         if (this.sp == null){

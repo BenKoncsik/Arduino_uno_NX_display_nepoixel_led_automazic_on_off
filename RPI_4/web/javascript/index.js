@@ -1,5 +1,5 @@
-// let url = "http://192.168.2.8:8003/"
-let url = "http://localhost:8080/"
+let url = "http://192.168.2.8:8003/"
+// let url = "http://localhost:8080/"
 let debug = true;
 
 
@@ -9,6 +9,7 @@ let brightness = 255;
 let auto_led_brightness = 11000;
 let openSetting = false;
 
+let auto_update = true;
 let background = 1;
 
 let bug_icon = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-bug-fill\" viewBox=\"0 0 16 16\">\n" +
@@ -27,8 +28,21 @@ async function start_set() {
 
     // 10 secund update
     // setInterval(sett_status, 60000);
-    setInterval(set_status, 15000);
+    setInterval(set_status, 10000);
+    setInterval(stop_auto_update, 10);
+    // stop_auto_update();
 }
+
+async function stop_auto_update(){
+    if ($('.card:hover').length > 0) {
+        auto_update = false;
+    } else {
+        auto_update = true;
+    }
+    if(debug) console.log("auto_update "+auto_update);
+}
+
+
 $("#white_brightness").change(function() {
     let rangePercent = $('#white_brightness_range').val();
     $('#white_brightness_range').on('change input', function() {
@@ -91,10 +105,6 @@ $("#auto").click(async function (){
 });
 
 
-
-
-
-
 async function request(command, debug_element){
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url+command, true);
@@ -118,54 +128,60 @@ async function request(command, debug_element){
 
 
 async function set_status(){
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", url+"status", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText)
-            lamp_state = response.power;
-            let text = document.getElementById("switch").getElementsByClassName("card__title")[0]
-            if (lamp_state){
-                text.innerHTML = "Lamp on";
-            }else {
-                text.innerHTML = "Lamp off";
-            }
-            lamp_auto = response.auto;
-            text = document.getElementById("auto").getElementsByClassName("card__title")[0]
-            if (lamp_auto){
-                text.innerHTML = "Automatic Lamp";
-                document.getElementById("auto_led_brightness").style.display = "block";
-            }else {
-                text.innerHTML = "Manual Lamp";
-                document.getElementById("auto_led_brightness").style.display = "none";
-            }
-            brightness = response.brightness;
-            document.getElementById("white_brightness_range").value = brightness;
-            let precent  = brightness/2.55;
-            $('#white_brightness_value').html( Math.ceil(precent)+'<span></span>');
-            $('#white_brightness_range, #white_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
-            $('#white_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(brightness/100)) + ')', 'left': precent +'%'});
+    if (auto_update) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url + "status", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText)
+                lamp_state = response.power;
+                let text = document.getElementById("switch").getElementsByClassName("card__title")[0]
+                if (lamp_state) {
+                    text.innerHTML = "Lamp on";
+                } else {
+                    text.innerHTML = "Lamp off";
+                }
+                lamp_auto = response.auto;
+                text = document.getElementById("auto").getElementsByClassName("card__title")[0]
+                if (lamp_auto) {
+                    text.innerHTML = "Automatic Lamp";
+                    document.getElementById("auto_led_brightness").style.display = "block";
+                } else {
+                    text.innerHTML = "Manual Lamp";
+                    document.getElementById("auto_led_brightness").style.display = "none";
+                }
+                brightness = response.brightness;
+                document.getElementById("white_brightness_range").value = brightness;
+                let precent = brightness / 2.55;
+                $('#white_brightness_value').html(Math.ceil(precent) + '<span></span>');
+                $('#white_brightness_range, #white_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
+                $('#white_brightness_value').css({
+                    'transform': 'translateX(calc(-50% - 20px)) scale(' + (1 + (brightness / 100)) + ')',
+                    'left': precent + '%'
+                });
 
-            auto_led_brightness = response.auto_led_brightness;
-            rangePercent = document.getElementById("auto_led_brightness_range").value = auto_led_brightness
-            precent  = rangePercent/2.55
-            $('#auto_led_brightness_value').html( Math.ceil(precent)+'<span></span>');
-            $('#auto_led_brightness_range, #auto_led_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
-            $('#auto_led_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(rangePercent/100)) + ')', 'left': precent +'%'});
-            if (debug){
-                console.log(lamp_state)
-                console.log("response: " + xhr.responseText);
+                auto_led_brightness = response.auto_led_brightness;
+                rangePercent = document.getElementById("auto_led_brightness_range").value = auto_led_brightness
+                precent = rangePercent / 2.55
+                $('#auto_led_brightness_value').html(Math.ceil(precent) + '<span></span>');
+                $('#auto_led_brightness_range, #auto_led_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
+                $('#auto_led_brightness_value').css({
+                    'transform': 'translateX(calc(-50% - 20px)) scale(' + (1 + (rangePercent / 100)) + ')',
+                    'left': precent + '%'
+                });
+                if (debug) {
+                    console.log(lamp_state)
+                    console.log("response: " + xhr.responseText);
+                }
+            } else {
+                if (debug) {
+                    console.log("response: " + xhr.status);
+                }
             }
-        }else {
-            if (debug){
-                console.log("response: " + xhr.status);
-            }
-        }
-    };
-
-    xhr.send();
-
+        };
+        xhr.send();
+    }
 }
 
 

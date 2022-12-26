@@ -26,13 +26,12 @@
     }
 }
 
-
 .setting_menu{
-    position: absolute;
+    position: fixed;
     /*top: 20%;*/
     z-index: 3;
     background: radial-gradient(#1f43f5, #dea3e5);
-    margin: 20px;
+    /*margin: 20px;*/
     padding: 20px;
     width: 90%;
     /*min-height: 200px;*/
