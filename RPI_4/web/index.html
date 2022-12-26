@@ -8,13 +8,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css">
 </head>
-<body onload="start_sett()">
+<body onload="start_set()">
 
 <div class="main-container">
     <div class="heading">
         <h1 class="heading__title">Smart Lamp Control</h1>
         <p class="heading__credits"><a class="heading__link" target="_blank"
-                                       href="https://github.com/Koncsik-cyber/Arduino_uno_NX_display_nepoixel_led_automazic_on_off">Power by Koncsik Benedek</a></p>
+                                       href="https://github.com/Koncsik-cyber/Arduino_uno_NX_display_nepoixel_led_automazic_on_off">Power
+            by Koncsik Benedek</a></p>
     </div>
     <div class="cards">
         <div class="card card-1" id="switch">
@@ -87,20 +88,47 @@
         <div class="card card-6" id="settings">
             <div class="card__icon"></div>
             <p class="card__exit"></p>
-            <h2 class="card__title card__link_h2">Background color</h2>
+            <h2 class="card__title card__link_h2">Settings</h2>
             <p class="card__apply">
-                <span class="card__link" ><i class="fas fa-arrow-right"></i></span>
+                <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+            </p>
+        </div>
+
+        <div class="close setting_menu" id="setting_menu">
+            <div class="card__icon"></div>
+            <p class="card__exit" id="exit_setting_menu">
+                <svg class="bi bi-x " fill="currentColor" height="16" viewBox="0 0 16 16" width="16"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </p>
+            <h2 class="card__title card__link_h2">Settings Menu</h2>
+            <div class="setting_cards">
+                <div class="setting_card card-6" id="background_setting">
+                    <div class="card__icon"></div>
+                    <p class="card__exit"></p>
+                    <h2 class="card__title card__link_h2">Background color</h2>
+                    <p class="card__apply">
+                        <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+                    </p>
+                </div>
+            </div>
+
+            <p class="card__apply">
+                <span class="card__link"><i class="fas fa-arrow-right"></i></span>
             </p>
         </div>
     </div>
-</div>
-<footer>
-    <span>V 1.5 Koncsik Benedek</span>
-</footer>
 
-<meta name="designer: Eric Mahoney --> UI: Gradient Banner Cards" content="https://codepen.io/ericmahoney/pen/oNLMOYw">
-<meta name="icon_description" content="http://koncsik.hopto.org/benedek/img_other/icon.gif">
-<meta name="warrant_canary" content="http://koncsik.hopto.org/benedek/img_other/antihere.gif">
+
+    <footer>
+        <span>V 1.5 Koncsik Benedek</span>
+    </footer>
+
+    <meta content="https://codepen.io/ericmahoney/pen/oNLMOYw"
+          name="designer: Eric Mahoney --> UI: Gradient Banner Cards">
+    <meta content="http://koncsik.hopto.org/benedek/img_other/icon.gif" name="icon_description">
+    <meta content="http://koncsik.hopto.org/benedek/img_other/antihere.gif" name="warrant_canary">
 </body>
 <script type="application/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="application/javascript" src="javascript/cookieMonster.js"></script>

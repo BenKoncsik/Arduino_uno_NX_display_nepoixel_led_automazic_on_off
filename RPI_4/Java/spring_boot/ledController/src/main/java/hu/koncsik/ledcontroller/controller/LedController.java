@@ -29,7 +29,8 @@ public class LedController {
     public static int brightness  = 255;
     public static int[] color  ={255,255,255};
     public static int colorBrightness = 100;
-    public static int autoLedOnBrightness = 11000;
+    public static int autoLedOnBrightness = 15;
+
 
 
     @GetMapping(value = "/on", produces = MediaType.APPLICATION_JSON_VALUE)

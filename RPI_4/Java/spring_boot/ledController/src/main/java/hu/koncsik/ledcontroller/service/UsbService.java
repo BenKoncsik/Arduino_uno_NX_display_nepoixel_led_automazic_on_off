@@ -275,7 +275,7 @@ public class UsbService {
             sp.getOutputStream().flush();
             if (sp.bytesAvailable() > 0){
                 int response = sp.getInputStream().read();
-                log.info("Usb communication set on auto led is on: " + response + "-->" + ((response * 690.9090588) - 502.56));
+                log.info("Usb communication set on auto led is on: " + response + "-->" + ((response * 690.9090588) + 502.56));
 
             }
         }catch (Exception e){
@@ -288,6 +288,6 @@ public class UsbService {
                 log.error("Big problem: " + e);
             }
         }
-        return level;
+        return 255-level;
     }
 }

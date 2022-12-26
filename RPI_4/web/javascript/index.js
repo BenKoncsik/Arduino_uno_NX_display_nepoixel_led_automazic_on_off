@@ -7,7 +7,7 @@ let lamp_state = false;
 let lamp_auto = true;
 let brightness = 255;
 let auto_led_brightness = 11000;
-
+let openSetting = false;
 
 let background = 1;
 
@@ -16,7 +16,19 @@ let bug_icon = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"
     "  <path d=\"M13 6v1H8.5v8.975A5 5 0 0 0 13 11h.5a.5.5 0 0 1 .5.5v.5a.5.5 0 1 0 1 0v-.5a1.5 1.5 0 0 0-1.5-1.5H13V9h1.5a.5.5 0 0 0 0-1H13V7h.5A1.5 1.5 0 0 0 15 5.5V5a.5.5 0 0 0-1 0v.5a.5.5 0 0 1-.5.5H13zm-5.5 9.975V7H3V6h-.5a.5.5 0 0 1-.5-.5V5a.5.5 0 0 0-1 0v.5A1.5 1.5 0 0 0 2.5 7H3v1H1.5a.5.5 0 0 0 0 1H3v1h-.5A1.5 1.5 0 0 0 1 11.5v.5a.5.5 0 1 0 1 0v-.5a.5.5 0 0 1 .5-.5H3a5 5 0 0 0 4.5 4.975z\"/>\n" +
     "</svg>"
 
+async function start_set() {
+    if (debug) {
+        console.log("status_run")
+    }
+    cookie();
+    set_background();
+    set_status();
+    console.log(brightness)
 
+    // 10 secund update
+    // setInterval(sett_status, 60000);
+    setInterval(set_status, 15000);
+}
 $("#white_brightness").change(function() {
     let rangePercent = $('#white_brightness_range').val();
     $('#white_brightness_range').on('change input', function() {
@@ -41,9 +53,8 @@ $("#auto_led_brightness").change(function() {
         let precent  = rangePercent/2.55
         $('#auto_led_brightness_value').html( Math.ceil(precent)+'<span></span>');
         $('#auto_led_brightness_range, #auto_led_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
-
         $('#auto_led_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(rangePercent/100)) + ')', 'left': precent +'%'});
-        // $('#white_brightness_value').css({'transform': 'translateX(-50%) scale(' + (1+(rangePercent/100)) + ')', 'left': rangePercent+'%'});
+
     });
 });
 $("#auto_led_brightness_button").click(async function (){
@@ -56,10 +67,10 @@ $("#switch").click(async function (){
     let debug_element = document.getElementById("switch").getElementsByClassName("card__link")[0];
     if (lamp_state){
         text.innerHTML = "Lamp off";
-        await request("off", debug_element);
+        request("off", debug_element);
     }else {
         text.innerHTML = "Lamp on";
-        await request("on", debug_element);
+        request("on", debug_element);
     }
     lamp_state = !lamp_state;
 });
@@ -67,13 +78,16 @@ $("#switch").click(async function (){
 $("#auto").click(async function (){
     let text = document.getElementById("auto").getElementsByClassName("card__title")[0];
     let debug_element = document.getElementById("auto").getElementsByClassName("card__link")[0];
-    await request("auto", debug_element);
+    await request('auto', debug_element)
     if (lamp_auto){
         text.innerHTML = "Manual Lamp";
+        document.getElementById("auto_led_brightness").style.display = "none";
     }else {
         text.innerHTML = "Automatic Lamp";
+        document.getElementById("auto_led_brightness").style.display = "block";
     }
     lamp_auto = !lamp_auto;
+
 });
 
 
@@ -90,6 +104,7 @@ async function request(command, debug_element){
             if (debug){
                 console.log("response: " + xhr.responseText);
                 debug_element.innerHTML =  bug_icon+"-->"+xhr.responseText;
+                return xhr.responseText;
             }
         }else {
             if (debug){
@@ -101,20 +116,8 @@ async function request(command, debug_element){
     xhr.send();
 }
 
-async function start_sett() {
-    if (debug) {
-        console.log("status_run")
-    }
-    cookie();
-    sett_status();
-    document.getElementById("settings").getElementsByClassName("card__icon")[0].innerHTML = background;
-    console.log(brightness)
 
-    // 5 secund update
-    // setInterval(sett_status, 60000);
-    setInterval(sett_status, 10000);
-}
-async function sett_status(){
+async function set_status(){
     let xhr = new XMLHttpRequest();
     xhr.open("GET", url+"status", true);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -131,9 +134,11 @@ async function sett_status(){
             lamp_auto = response.auto;
             text = document.getElementById("auto").getElementsByClassName("card__title")[0]
             if (lamp_auto){
-                text.innerHTML = "Manual Lamp";
-            }else {
                 text.innerHTML = "Automatic Lamp";
+                document.getElementById("auto_led_brightness").style.display = "block";
+            }else {
+                text.innerHTML = "Manual Lamp";
+                document.getElementById("auto_led_brightness").style.display = "none";
             }
             brightness = response.brightness;
             document.getElementById("white_brightness_range").value = brightness;
@@ -143,7 +148,11 @@ async function sett_status(){
             $('#white_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(brightness/100)) + ')', 'left': precent +'%'});
 
             auto_led_brightness = response.auto_led_brightness;
-
+            rangePercent = document.getElementById("auto_led_brightness_range").value = auto_led_brightness
+            precent  = rangePercent/2.55
+            $('#auto_led_brightness_value').html( Math.ceil(precent)+'<span></span>');
+            $('#auto_led_brightness_range, #auto_led_brightness_value>span').css('filter', 'hue-rotate(-' + precent + 'deg)');
+            $('#auto_led_brightness_value').css({'transform': 'translateX(calc(-50% - 20px)) scale(' + (1+(rangePercent/100)) + ')', 'left': precent +'%'});
             if (debug){
                 console.log(lamp_state)
                 console.log("response: " + xhr.responseText);
@@ -160,39 +169,72 @@ async function sett_status(){
 }
 
 
-$("#settings").click(function (){
-    let body = document.getElementsByTagName("body")[0];
-    let h1 = document.getElementsByTagName("h1")[0];
+$("#background_setting").click(function (){
     background++;
     if (background > 4) background = 1;
+    set_background();
+});
+
+function cookie(){
+    try {
+        background = parseInt(cookiemonster.get("background"));
+    }catch (e){
+        console.log("no cookie")
+    }
+
+}
+
+function set_background(){
+    let body = document.getElementsByTagName("body")[0];
+    let h1 = document.getElementsByTagName("h1")[0];
     if(debug) {
-        console.log(background)
+        console.log("theme: " + background)
     }
     switch (background){
         case 1:
             body.style.background = "#fff";
             body.style.color = "#333";
             h1.style.color = "#333"
-        break;
+            break;
         case 2:
             body.style.background = "black";
             body.style.color = "#fff";
             h1.style.color = "white"
-        break;
+            break;
         case 3:
             body.style.background = "#444444";
             body.style.color = "#fff";
             h1.style.color = "white"
-        break;
+            break;
         case 4:
             body.style.background = "#f7a3b5";
             body.style.color = "#fff";
             h1.style.color = "white"
-        break;
+            break;
     }
-    document.getElementById("settings").getElementsByClassName("card__icon")[0].innerHTML = background;
+    cookiemonster.set("background", background, 30)
+    document.getElementById("background_setting").getElementsByClassName("card__icon")[0].innerHTML = background;
+}
+
+
+$("#settings").click(function (){
+
+    if (openSetting) {
+        $("#setting_menu").removeClass("open");
+        $("#setting_menu").addClass("close");
+        document.getElementsByTagName("body")[0].style.overflow = "auto";
+    }else {
+        $("#setting_menu").removeClass("close");
+        $("#setting_menu").addClass("open");
+        document.getElementsByTagName("body")[0].style.overflow = "hidden";
+    }
+
+    openSetting = !openSetting;
 });
 
-function cookie(){
-
-}
+$("#exit_setting_menu").click(function (){
+    $("#setting_menu").removeClass("open");
+    $("#setting_menu").addClass("close");
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
+    openSetting = false;
+})

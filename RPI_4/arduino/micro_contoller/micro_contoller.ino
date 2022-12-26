@@ -21,8 +21,7 @@ int led_first = 5;
 int led_last = 25;
 bool led_light = false;
 bool auto_led = true;
-
-
+bool led_power = false;
 
 
 void setup() {
@@ -45,28 +44,31 @@ void led_main() {
   byte incomingByte = 0;
   if (Serial.available() > 0) {
     incomingByte = Serial.read();
-
+    // on
     if (incomingByte == 49) {
       Serial.write(incomingByte);
       led_on();
+      led_power = true;
     }
-
+    //off
     if (incomingByte == 50) {
       Serial.write(incomingByte);
       led_off();
+      led_power = false;
     }
+    // measurment
     if (incomingByte == 51) {
       Serial.flush();
       int mes = (measurement() + 492) / 1000;
       Serial.write(mes);
     }
-
+    // automatic lamp
     if (incomingByte == 54) {
       Serial.flush();
       auto_led = !auto_led;
       Serial.write(auto_led);
     }
-
+    // white brightness
     if (incomingByte == 55) {
       Serial.flush();
       int level = 0;
@@ -80,7 +82,7 @@ void led_main() {
         led_on();
       }
     }
-
+    // sett rgb colore
     if (incomingByte == 56) {
       int clorComponent = 0;
       for (int i = 0; i < 3; i++) {
@@ -94,7 +96,7 @@ void led_main() {
         led_on();
       }
     }
-
+    //set color brightness
     if (incomingByte == 57) {
       Serial.flush();
       int level_read = 0;
@@ -111,14 +113,14 @@ void led_main() {
       }
     }
   }
-
+  // automatic on brightness level
   if (incomingByte == 58) {
     Serial.flush();
     int read_led = 0;
     delay(500);
     read_led = Serial.read();
     Serial.write(read_led);
-    led_resistor_on = ((read_led *  690.9090588) - 502.56);
+    led_resistor_on = ((read_led * 690.9090588) + 502.56);
   }
 }
 
@@ -175,8 +177,15 @@ void led_first_on() {
 
 void auto_led_switch() {
   if (auto_led) {
+    resistor = measurement();
     if (resistor >= led_resistor_on) {
       led_on();
+    } else {
+      led_off();
+    }
+  } else{
+    if (led_power) {
+      led_on();      
     } else {
       led_off();
     }
