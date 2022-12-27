@@ -1,0 +1,11 @@
+input[type=text]{
+    border-radius: 10px !important;
+    height: 50px !important;
+    cursor: text;
+}
+
+input[type=text]:focus {
+    background-color: #cdbdfc;
+    cursor: text;
+}
+

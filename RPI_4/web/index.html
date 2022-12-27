@@ -97,17 +97,41 @@
         <div class="close setting_menu" id="setting_menu">
             <div class="card__icon"></div>
             <p class="card__exit" id="exit_setting_menu">
-                <svg class="bi bi-x " fill="currentColor" height="16" viewBox="0 0 16 16" width="16"
+                <svg class="bi bi-x" fill="currentColor" viewBox="0 0 16 16"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </p>
             <h2 class="card__title card__link_h2">Settings Menu</h2>
             <div class="setting_cards">
-                <div class="setting_card card-6" id="background_setting">
+                <div class="setting_card setting_card-1" id="background_setting">
                     <div class="card__icon"></div>
                     <p class="card__exit"></p>
                     <h2 class="card__title card__link_h2">Background color</h2>
+                    <p class="card__apply">
+                        <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+                    </p>
+                </div>
+                <div class="setting_card setting_card-2" id="debug_mode">
+                    <div class="card__icon">Off</div>
+                    <p class="card__exit"></p>
+                    <h2 class="card__title card__link_h2">Debug mode</h2>
+                    <p class="card__apply">
+                        <span class="card__link"><i class="fas fa-arrow-right"></i></span>
+                    </p>
+                </div>
+                <div class="setting_card setting_card-3" id="sett_ip">
+                    <div class="card__icon">ip</div>
+                    <p class="card__exit"></p>
+                    <h2 class="card__title card__link_h2">Sett Server Ip
+                        <input type="text" class="card__range" placeholder="http://192.168.2.8:8003/"
+                               id="sett_ip_list" name="sett_ip_list" list="ip_address">
+                        <datalist id="ip_address"></datalist>
+                        <a class="button_a" id="set_ip_a">
+                            <span>set</span>
+                            <div class="liquid" id="set_ip_div"></div>
+                        </a>
+                    </h2>
                     <p class="card__apply">
                         <span class="card__link"><i class="fas fa-arrow-right"></i></span>
                     </p>

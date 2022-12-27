@@ -1,6 +1,5 @@
 let url = "http://192.168.2.8:8003/"
-// let url = "http://localhost:8080/"
-let debug = true;
+let debug = false;
 
 
 let lamp_state = false;
@@ -11,6 +10,7 @@ let openSetting = false;
 
 let auto_update = true;
 let background = 1;
+let ip_list = ["http://192.168.2.8:8003/", "http://localhost:8080/"];
 
 let bug_icon = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-bug-fill\" viewBox=\"0 0 16 16\">\n" +
     "  <path d=\"M4.978.855a.5.5 0 1 0-.956.29l.41 1.352A4.985 4.985 0 0 0 3 6h10a4.985 4.985 0 0 0-1.432-3.503l.41-1.352a.5.5 0 1 0-.956-.29l-.291.956A4.978 4.978 0 0 0 8 1a4.979 4.979 0 0 0-2.731.811l-.29-.956z\"/>\n" +
@@ -22,10 +22,11 @@ async function start_set() {
         console.log("status_run")
     }
     cookie();
+    set_ips();
     set_background();
     set_status();
-    console.log(brightness)
-
+    if (debug) console.log("brightness: " + brightness)
+    document.getElementById("sett_ip").getElementsByClassName("card__icon")[0].innerHTML = url;
     // 10 secund update
     // setInterval(sett_status, 60000);
     setInterval(set_status, 10000);
@@ -102,6 +103,35 @@ $("#auto").click(async function (){
     }
     lamp_auto = !lamp_auto;
 
+});
+
+$("#set_ip_a").click(async function (){
+    let new_ip = document.getElementById("sett_ip_list").value;
+    url  = new_ip;
+    setting_ip_save_cookie();
+    document.getElementById("sett_ip").getElementsByClassName("card__icon")[0].innerHTML = url;
+    let is_ip=false;
+    ip_list.forEach(function (ip){
+        if (ip === new_ip) is_ip = true;
+    });
+    if (!is_ip){
+        ip_list.push(new_ip);
+    }
+    let ip_string = "";
+    ip_list.forEach(function (ip){
+        if(debug) console.log("ip: " + ip)
+        if (debug){
+            console.log("undefined: " + (ip !== 'undefined') + " 192.168.2.8=" +  (ip !== "http://192.168.2.8:8003/") +
+                " loaclhost= " + (ip !== "http://localhost:8080/"));
+        }
+        if (ip !== 'undefined' && ip !== "http://192.168.2.8:8003/" && ip !== "http://localhost:8080/") {
+            if (debug)console.log("hozzadava");
+            ip_string += ip + ";";
+        }
+    })
+    if(debug) console.log("ip list to string: " + ip_string);
+    cookiemonster.set("ips", ip_string, 30);
+    set_ips();
 });
 
 
@@ -195,7 +225,32 @@ function cookie(){
     try {
         background = parseInt(cookiemonster.get("background"));
     }catch (e){
-        console.log("no cookie")
+        if (debug) console.log("no cookie");
+    }
+
+    try {
+        url = cookiemonster.get("set_url");
+    }catch (e){
+        if (debug) console.log("no cookie");
+    }
+
+
+    try {
+        let cookie_string =  cookiemonster.get("ips");
+        if(debug) console.log("ip list to string: " + cookie_string);
+        cookie_string.split(';').forEach(function (ip){
+           if(debug) console.log("ip: " + ip)
+            if (debug){
+                console.log("undefined: " + (ip !== 'undefined') + " 192.168.2.8=" +  (ip !== "http://192.168.2.8:8003/") +
+                " loaclhost= " + (ip !== "http://localhost:8080/"));
+            }
+            if (ip !== 'undefined' && ip !== "http://192.168.2.8:8003/" && ip !== "http://localhost:8080/") {
+                if (debug)console.log("hozzadava");
+                ip_list.push(ip);
+            }
+        });
+    }catch (e){
+        if (debug) console.log("no cookie");
     }
 
 }
@@ -254,3 +309,27 @@ $("#exit_setting_menu").click(function (){
     document.getElementsByTagName("body")[0].style.overflow = "auto";
     openSetting = false;
 })
+
+$("#debug_mode").click(function debugMode(){
+    let debug_div = document.getElementById("debug_mode").getElementsByClassName("card__icon")[0];
+    if (debug){
+        debug_div.innerHTML = "Off";
+    }else {
+        debug_div.innerHTML = "On";
+    }
+    debug = !debug;
+});
+
+
+async function set_ips(){
+    let datalist =  document.getElementById("ip_address");
+    ip_list.forEach(function (ip){
+            let option = document.createElement('option');
+            option.value = ip;
+            datalist.appendChild(option);
+    });
+}
+
+async function setting_ip_save_cookie(){
+    cookiemonster.set("set_url", url);
+}

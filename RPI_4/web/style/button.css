@@ -18,6 +18,7 @@ a span {
     font-family: Arial, serif;
     letter-spacing: 8px;
     z-index: 1;
+    cursor: pointer;
 }
 
 a .liquid {
@@ -32,6 +33,10 @@ a .liquid {
 }
 #auto_led_button_color{
     background: radial-gradient(#1fe4f5, #3fbafe);
+}
+#set_ip_a{
+    background: radial-gradient(#1fe4f5, #76b2fe);
+    /*margin-left: 0;*/
 }
 a .liquid::after,
 a .liquid::before {

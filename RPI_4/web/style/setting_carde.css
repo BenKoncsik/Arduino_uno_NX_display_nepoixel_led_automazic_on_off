@@ -41,18 +41,41 @@
     border-radius: 10px;
     box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
     transition: all 0.2s;
+    cursor: pointer;
+}
+
+.setting_card-1{
+    background: radial-gradient(#c251a4, #c0a3e5);
+}
+.setting_card-2{
+    background: radial-gradient(#c0a3e5, #4e89f5);
+}
+.setting_card-3{
+    background: radial-gradient(#4e89f5, #cdbdfc);
+    min-width: 500px !important;
+    overflow-y: auto;
 }
 
 .card__exit:hover{
-    cursor: default;
-    background-color:rgba(192,192,192,0.3);
+    cursor: pointer;
+    /*background-color:rgba(192,192,192,0.3);*/
+}
+.card__exit svg{
+    height: 50px;
+    width: 50px;
 }
 .card__exit{
 
 }
 
 .setting_menu{
-
+    cursor: default;
+}
+.setting_menu .setting_card{
+    cursor: pointer;
+}
+.setting_menu .setting_card:has(a){
+    cursor: default;
 }
 
 .setting_card{
@@ -81,3 +104,5 @@
 .setting_cards::-webkit-scrollbar{
     display: none;
 }
+
+
