@@ -14,7 +14,6 @@ namespace LedContoller.Model
 
         public int LedNumber { get; set; }
         private Color _ledColor;
-
         public Color LedColor
         {
             get => _ledColor;

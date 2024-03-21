@@ -1,4 +1,5 @@
 using LedContoller.Const;
+using LedContoller.Socket;
 using LedController.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ILedStripService, LedStripService>();
 
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddSignalR();
 
 ProgramConstans.Init(builder.Configuration.GetSection("LedNumber").Get<int>());
 
@@ -29,4 +33,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapBlazorHub();
+    endpoints.MapHub<LedControlHub>("/ledControlHub");
+});
 app.Run();
