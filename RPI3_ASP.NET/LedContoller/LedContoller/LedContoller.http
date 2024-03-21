@@ -1,0 +1,6 @@
+@LedContoller_HostAddress = http://localhost:5145
+
+GET {{LedContoller_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
