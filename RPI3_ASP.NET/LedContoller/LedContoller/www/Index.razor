@@ -4,7 +4,6 @@
 @using LedContoller.Socket
 @using Microsoft.AspNetCore.SignalR
 
-
 @inject IHubContext<LedControlHub> HubContext
 
 @foreach (var led in ledStates)
@@ -18,15 +17,20 @@
 
 @code {
     private ObservableCollection<LEDState> ledStates;
+    //private Microsoft.AspNetCore.SignalR.Client.HubConnection? hubConnection;
 
     protected override async Task OnInitializedAsync()
+    {
+        LoadLeds();
+    }
+    private async void LoadLeds()
     {
         
     }
 
     private async Task SetLedColor(LEDState led, string color)
     {
-        led.LedColor = ColorTranslator.FromHtml(color);
+        led.SetColorFromHtml(color);
         await HubContext.Clients.All.SendAsync("SettLedState", led);
     }
 

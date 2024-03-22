@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34607.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LedContollerBlazor", "LedContollerBlazor\LedContollerBlazor\LedContollerBlazor.csproj", "{807CF491-7DF4-459D-8418-BBBD825C2878}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LedContollerBlazor.Client", "LedContollerBlazor\LedContollerBlazor.Client\LedContollerBlazor.Client.csproj", "{1B81811A-2369-4C5B-B8ED-7DE11F3C1E61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LedContollerBlazor.AppHost", "LedContollerBlazor.AppHost\LedContollerBlazor.AppHost.csproj", "{38F7CC7B-E440-444B-86CF-380C82665268}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LedContollerBlazor.ServiceDefaults", "LedContollerBlazor.ServiceDefaults\LedContollerBlazor.ServiceDefaults.csproj", "{FC54B176-667A-423E-A99D-D6514D70DF55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{807CF491-7DF4-459D-8418-BBBD825C2878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{807CF491-7DF4-459D-8418-BBBD825C2878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{807CF491-7DF4-459D-8418-BBBD825C2878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{807CF491-7DF4-459D-8418-BBBD825C2878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B81811A-2369-4C5B-B8ED-7DE11F3C1E61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B81811A-2369-4C5B-B8ED-7DE11F3C1E61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B81811A-2369-4C5B-B8ED-7DE11F3C1E61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B81811A-2369-4C5B-B8ED-7DE11F3C1E61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F7CC7B-E440-444B-86CF-380C82665268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F7CC7B-E440-444B-86CF-380C82665268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F7CC7B-E440-444B-86CF-380C82665268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F7CC7B-E440-444B-86CF-380C82665268}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC54B176-667A-423E-A99D-D6514D70DF55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC54B176-667A-423E-A99D-D6514D70DF55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC54B176-667A-423E-A99D-D6514D70DF55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC54B176-667A-423E-A99D-D6514D70DF55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01FAC427-378C-4329-BB6B-6E73C9BAFB5B}
+	EndGlobalSection
+EndGlobal

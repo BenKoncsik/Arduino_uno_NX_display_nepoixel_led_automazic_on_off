@@ -1,0 +1,137 @@
+﻿@page "/"
+@using System.Collections.ObjectModel
+@using LedContollerBlazor.Client.Model
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Globalization
+@inject NavigationManager NavigationManager
+@rendermode InteractiveAuto
+
+
+<PageTitle>Koncsik SLC</PageTitle>
+
+<div class="container mt-4">
+    <h2 class="mb-3">LED vezérlő</h2>
+    <div>
+        @foreach (var led in ledStates)
+        {
+            <div class="led-icon" style="background-color: @led.LedColor;" @onclick="() => OpenLedDialog(led)"></div>
+        }
+    </div>
+</div>
+
+@if (selectedLed != null)
+{
+    <div class="modal" style="display:block">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseLedDialog">&times;</span>
+            <h3>LED @selectedLed.LedNumber</h3>
+            <div class="form-group">
+                <label>Szín:</label>
+                <input type="color" value="@selectedLed.LedColor" @onchange="(e) => SetLedColor(selectedLed, e.Value.ToString())" />
+            </div>
+            <div class="form-group">
+                <label>Fényerő:</label>
+                <input type="range" class="form-range" min="0" max="1" step="0.01" value="@selectedLed.Brightness.ToString(System.Globalization.CultureInfo.InvariantCulture)" @onchange="(e) => SetLedBrightness(selectedLed, e.Value.ToString())" />
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
+    private HubConnection? hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
+       {
+           InvokeAsync(() =>
+            {
+                ledStates = leds;
+                StateHasChanged();
+            });
+       });
+
+        hubConnection.On<LEDStateJsonModel>("UpdateState", (led) =>
+        {
+            SetLed(led);
+        });
+
+        await hubConnection.StartAsync();
+        LoadLeds();
+    }
+
+
+    private async void LoadLeds()
+    {
+        if (hubConnection.State == HubConnectionState.Connected)
+        {
+            await hubConnection.InvokeAsync("SendLedStates");
+        }
+    }
+
+    private async void SetLed(LEDStateJsonModel led)
+    {
+        if (ledStates != null)
+        {
+            LEDStateJsonModel? oldLed = ledStates.FirstOrDefault(l => l.LedNumber.Equals(led.LedNumber));
+            if(oldLed == null)
+            {
+                ledStates.Add(led);
+            }
+            else
+            {
+                oldLed.LedColor = led.LedColor;
+                oldLed.Brightness = led.Brightness;
+            }
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SetLedColor(LEDStateJsonModel led, string color)
+    {
+        led.LedColor = color;
+        await hubConnection.InvokeAsync("SettLedState", led);
+    }
+
+    private async Task SetLedBrightness(LEDStateJsonModel led, string brightness)
+    {
+        if (float.TryParse(brightness, NumberStyles.Any, CultureInfo.InvariantCulture, out float brightnessValue))
+        {
+            led.Brightness = brightnessValue;
+        }
+        await hubConnection.InvokeAsync("SettLedState", led);
+    }
+
+
+    public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+
+    LEDStateJsonModel selectedLed;
+
+    void OpenLedDialog(LEDStateJsonModel led)
+    {
+        selectedLed = led;
+    }
+
+    void CloseLedDialog()
+    {
+        selectedLed = null;
+    }
+}

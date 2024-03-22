@@ -4,6 +4,8 @@ using Iot.Device.Graphics;
 using Iot.Device.Ws28xx;
 using Color = System.Drawing.Color;
 using System.ComponentModel;
+using LedContollerBlazor.Client.Model;
+using System.Xml;
 
 
 namespace LedContoller.Model
@@ -74,6 +76,16 @@ namespace LedContoller.Model
                 (byte)(_ledColor.B * brightness)
             );
             LedColor = newColor;
+        }
+
+        public LEDStateJsonModel ConvertToLEDJsonModelState()
+        {
+            return new LEDStateJsonModel
+            {
+                LedNumber = this.LedNumber,
+                LedColor = ColorTranslator.ToHtml(this.LedColor),
+                Brightness = this.Brightness,
+            };
         }
     }
 }
