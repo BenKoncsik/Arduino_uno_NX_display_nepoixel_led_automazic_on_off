@@ -2,5 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>https</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>I:\xampp\htdocs\gitHub\Arduino_uno_NX_display_nepoixel_led_automazic_on_off\Arduino_uno_NX_display_nepoixel_led_automazic_on_off\RPI3_ASP.NET\LedContoller\LedContollerBlazor\LedContollerBlazor\LedContollerBlazor\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

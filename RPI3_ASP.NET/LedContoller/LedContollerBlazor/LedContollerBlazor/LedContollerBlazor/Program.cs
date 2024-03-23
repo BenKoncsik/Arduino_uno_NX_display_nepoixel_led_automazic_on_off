@@ -3,6 +3,9 @@ using LedContoller.Socket;
 using LedContollerBlazor.Components;
 using LedContollerBlazor.Services;
 using LedController.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,14 +22,11 @@ builder.Services.AddSignalR();
 
 ProgramConstans.Init(builder.Configuration.GetSection("LedNumber").Get<int>());
 
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-{
+#if DEBUG
     builder.Services.AddSingleton<ILedStripService, LedStripWindowsService>();
-}
-else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-{
+#else
     builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
-}
+#endif
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -45,10 +45,6 @@ else
 
 //app.UseHttpsRedirection();
 
-/*app.UseStaticFiles();
-app.UseAntiforgery();
-app.UseRouting();
-*/
 app.UseStaticFiles();
 
 app.UseRouting();
