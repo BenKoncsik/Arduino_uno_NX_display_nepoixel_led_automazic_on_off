@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>I:\xampp\htdocs\gitHub\SLC\Arduino_uno_NX_display_nepoixel_led_automazic_on_off\RPI3_ASP.NET\LedContoller\LedControleLinuxBlazor\LedControleLinuxBlazor\LedControleLinuxBlazor\bin\Release\net8.0\publish\</_PublishTargetUrl>
-    <History>True|2024-03-23T15:45:00.8416239Z||;</History>
+    <History>True|2024-03-23T19:06:38.0147838Z||;True|2024-03-23T16:50:08.5422428+01:00||;True|2024-03-23T16:49:36.9812747+01:00||;True|2024-03-23T16:45:00.8416239+01:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
