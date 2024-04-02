@@ -28,7 +28,9 @@ namespace LedControleLinuxBlazor.Socket
             {
                 ledState.SetColorFromHtml(newLed.LedColor);
                 ledState.Brightness = newLed.Brightness;
+                _ledStrip.SetLed(ledState);
             }
+            
             await Clients.All.SendAsync("UpdateState", ledState.ConvertToLEDJsonModelState());
         }
 

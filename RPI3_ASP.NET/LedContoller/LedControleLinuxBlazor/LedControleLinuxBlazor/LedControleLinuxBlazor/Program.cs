@@ -3,9 +3,22 @@ using LedControleLinuxBlazor.Const;
 using LedControleLinuxBlazor.Services;
 using LedControleLinuxBlazor.Socket;
 
-var builder = WebApplication.CreateBuilder(args);
+var options = new WebApplicationOptions
+{
+#if RELEASE
+    ContentRootPath = "/home/rpi_3/server_portable/",
+    WebRootPath = "/home/rpi_3/server_portable/wwwroot",
+#endif
+    Args = args
+};
 
+var builder = WebApplication.CreateBuilder(options);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    int port = builder.Configuration.GetSection("port").Get<int>();
+    serverOptions.Listen(System.Net.IPAddress.Any, port == null ? 80 : port);
+});
 
 // Add services to the container.
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -19,12 +32,11 @@ ProgramConstans.Init(builder.Configuration.GetSection("LedNumber").Get<int>());
 #if DEBUG
 builder.Services.AddSingleton<ILedStripService, LedStripWindowsService>();
 #else
-    builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
+ builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
 #endif
 
-
 var app = builder.Build();
-
+app.Urls.Add("http://localhost");
 
 
 // Configure the HTTP request pipeline.

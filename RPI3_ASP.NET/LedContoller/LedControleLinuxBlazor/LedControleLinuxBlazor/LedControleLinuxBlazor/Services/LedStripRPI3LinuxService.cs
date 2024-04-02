@@ -19,11 +19,13 @@ namespace LedControleLinuxBlazor.Services
 {
     public class LedStripRPI3LinuxService : ILedStripService
     {
-        private SpiConnectionSettings settings;
+        //private SpiConnectionSettings settings;
+        private rpi_ws281x.Settings settings;
         private int ledCount = ProgramConstans.LedCount;
         public LEDStateCollection LedStates = new LEDStateCollection();
         private SpiDevice spi;
-        private Ws2812b device;
+        //  private Ws2812b device;
+        private WS281x device;
         public LedStripRPI3LinuxService()
         {
             for (int i = 0; i < ledCount; i++)
@@ -31,8 +33,8 @@ namespace LedControleLinuxBlazor.Services
                 LedStates.Add(new LEDState(i));
             }
             LedStates.CollectionChanged += LedStates_CollectionChanged;
-            // Bus 0, Chip Select 0
-            settings = new SpiConnectionSettings(0, 0) 
+            // BusId 0, ChipSelectLine 0 (CE0 - GPIO 8)
+            /*settings = new SpiConnectionSettings(0, 0) 
             {
                 // A WS2812B számára szükséges órajel frekvencia
                 ClockFrequency = 2_400_000,
@@ -40,11 +42,42 @@ namespace LedControleLinuxBlazor.Services
                 Mode = SpiMode.Mode0,
                 // Az adatbitek hossza
                 DataBitLength = 8 
-            };
-            spi = SpiDevice.Create(settings);
-            device = new Ws2812b(spi, ledCount);
+            };*/
+            settings = Settings.CreateDefaultSettings();
+            //spi = SpiDevice.Create(settings);
+            //device = new Ws2812b(spi, ledCount);
+            settings.Channels[0] = new Channel(ledCount, 10, 255, false, StripType.WS2812_STRIP);
+            // device = new WS281x(settings);
+            Start();
         }
 
+        private void Start()
+        {
+            using (var controller = new WS281x(settings))
+            {
+                for (int i = 0; i < ledCount; i++)
+                {
+                    controller.SetLEDColor(0, i, Color.Green);
+                    controller.Render();
+                    Thread.Sleep(10);
+                    controller.SetLEDColor(0, i, Color.Black);
+                    controller.Render();
+                }
+                Thread.Sleep(100);
+                for (int i = 0; i < ledCount; i++)
+                {
+                    controller.SetLEDColor(0, i, Color.Green);
+                }
+                controller.Render();
+                Thread.Sleep(100);
+                for (int i = 0; i < ledCount; i++)
+                {
+                    controller.SetLEDColor(0, i, Color.Black);
+                }
+                controller.Render();
+
+            }
+        }
         public bool ON()
         {
             try
@@ -107,8 +140,16 @@ namespace LedControleLinuxBlazor.Services
         }
         public void SetLed(LEDState led)
         {
-            device.Image.SetPixel(led.LedNumber, 0, led.LedColor);
-            device.Update();
+            /*var image = device.Image;
+            image.SetPixel(0, led.LedNumber, led.LedColor);
+            device.Image.SetPixel(0, led.LedNumber, led.LedColor);
+            device.Update();*/
+            using (var rpi = new WS281x(settings))
+            {
+                Console.WriteLine($"Sett led: {led.LedNumber} color: {led.LedColor}");
+                rpi.SetLEDColor(0, led.LedNumber, led.LedColor);
+                rpi.Render();
+            }
         }
 
         public ref LEDStateCollection GetLedStates()

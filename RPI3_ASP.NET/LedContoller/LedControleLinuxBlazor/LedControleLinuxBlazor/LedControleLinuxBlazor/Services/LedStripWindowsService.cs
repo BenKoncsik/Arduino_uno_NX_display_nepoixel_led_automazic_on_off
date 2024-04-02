@@ -63,7 +63,7 @@ namespace LedControleLinuxBlazor.Services
 
         public void SetLed(LEDState led)
         {
-            Console.WriteLine($"Bunny methode: {led.LedNumber} Color: {led.LedColor} Brightness: {led.Brightness}");
+            Console.WriteLine($"Bunny methode: {led.LedNumber} Color: {led.LedColor.ToString()} Brightness: {led.Brightness}");
         }
 
 
