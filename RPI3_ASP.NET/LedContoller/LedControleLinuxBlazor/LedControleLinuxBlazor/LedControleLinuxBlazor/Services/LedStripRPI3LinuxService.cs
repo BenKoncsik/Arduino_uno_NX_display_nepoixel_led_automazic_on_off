@@ -33,21 +33,8 @@ namespace LedControleLinuxBlazor.Services
                 LedStates.Add(new LEDState(i));
             }
             LedStates.CollectionChanged += LedStates_CollectionChanged;
-            // BusId 0, ChipSelectLine 0 (CE0 - GPIO 8)
-            /*settings = new SpiConnectionSettings(0, 0) 
-            {
-                // A WS2812B számára szükséges órajel frekvencia
-                ClockFrequency = 2_400_000,
-                // Az SPI mód
-                Mode = SpiMode.Mode0,
-                // Az adatbitek hossza
-                DataBitLength = 8 
-            };*/
             settings = Settings.CreateDefaultSettings();
-            //spi = SpiDevice.Create(settings);
-            //device = new Ws2812b(spi, ledCount);
             settings.Channels[0] = new Channel(ledCount, 10, 255, false, StripType.WS2812_STRIP);
-            // device = new WS281x(settings);
             Start();
         }
 
@@ -140,15 +127,21 @@ namespace LedControleLinuxBlazor.Services
         }
         public void SetLed(LEDState led)
         {
-            /*var image = device.Image;
-            image.SetPixel(0, led.LedNumber, led.LedColor);
-            device.Image.SetPixel(0, led.LedNumber, led.LedColor);
-            device.Update();*/
             using (var rpi = new WS281x(settings))
             {
                 Console.WriteLine($"Sett led: {led.LedNumber} color: {led.LedColor}");
                 rpi.SetLEDColor(0, led.LedNumber, led.LedColor);
                 rpi.Render();
+            }
+        }
+        public void SetLeds(List<LEDState> leds)
+        {
+            using (var rpi = new WS281x(settings))
+            {
+                foreach(LEDState led in leds)
+                {
+                    SetLed(led);
+                }
             }
         }
 

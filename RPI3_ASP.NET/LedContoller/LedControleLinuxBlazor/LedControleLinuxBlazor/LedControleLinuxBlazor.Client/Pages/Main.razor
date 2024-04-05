@@ -1,56 +1,69 @@
-﻿@page "/old"
+﻿@page "/"
 @using System.Collections.ObjectModel
 @using LedControleLinuxBlazor.Client.Model
 @using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Globalization
 @inject NavigationManager NavigationManager
+@inject Microsoft.FluentUI.AspNetCore.Components.IDialogService dialogService
 @rendermode InteractiveAuto
+<PageTitle>SLC V2</PageTitle>
 
 
-<PageTitle>Koncsik SLC</PageTitle>
-
-<div class="container mt-4">
-    <h2 class="mb-3">LED vezérlő</h2>
-    <div>
+<FluentCard class="mt-4">
+    <FluentCardBody>
         @foreach (LEDStateJsonModel led in ledStates)
         {
             <div class="led-icon" style="background-color: @led.LedColor;" @onclick="() => OpenLedDialog(led)"></div>
         }
-    </div>
-</div>
+    </FluentCardBody>
+</FluentCard>
 
 @if (selectedLed != null)
 {
-    <div class="modal" style="display:block">
-        <div class="modal-content">
-            <span class="close" @onclick="CloseLedDialog">&times;</span>
-            <h3>LED @selectedLed.LedNumber</h3>
-            <div class="form-group">
-                <label>Szín:</label>
-                <input type="color" value="@selectedLed.LedColor" @onchange="(e) => SetLedColor(selectedLed, e.Value.ToString())" />
-            </div>
-            <div class="form-group">
-                <label>Fényerő:</label>
-                <input type="range" class="form-range" min="0" max="1" step="0.01" value="@selectedLed.Brightness.ToString(System.Globalization.CultureInfo.InvariantCulture)" @onchange="(e) => SetLedBrightness(selectedLed, e.Value.ToString())" />
-            </div>
-        </div>
-    </div>
+    <FluentDialog open=true onDismiss=CloseLedDialog>
+        <FluentLayout> 
+            <FluentDialogTitle>
+                <FluentStack Orientation="Orientation.Horizontal">
+                    LED @selectedLed.LedNumber
+                    <FluentButton OnClick="@CloseLedDialog"><span>&times;</span></FluentButton>
+                </FluentStack>
+            
+            </FluentDialogTitle>
+            <FluentDialogContent>
+                <FluentStack Orientation="Orientation.Vertical">
+                    <FluentForm>
+                        <FluentFormItem>
+                            <label for="colorPicker">Color:</label>
+                            <input type="color" id="colorPicker" value="@selectedLed.LedColor" @onchange="(e) => SetLedColor(selectedLed, e.Value.ToString())" />
+                        </FluentFormItem>
+                        <FluentFormItem>
+                            <label for="brightnessRange">Brightness:</label>
+                            <input type="range" id="brightnessRange" class="form-range" min="0" max="1" step="0.01" value="@selectedLed.Brightness.ToString(System.Globalization.CultureInfo.InvariantCulture)" @onchange="(e) => SetLedBrightness(selectedLed, e.Value.ToString())" />
+                        </FluentFormItem>
+                    </FluentForm>    
+                </FluentStack>
+            
+            </FluentDialogContent>
+        </FluentLayout>
+    </FluentDialog>
 }
-
 
 
 @code {
     private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
     private HubConnection? hubConnection;
+   // private SplashScreen loadingScreen = new SplashScreen(new DialogService());
 
     protected override async Task OnInitializedAsync()
     {
+    //    await loadingScreen.OpenSplashDefaultAsync("Connection the server");
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
             .WithAutomaticReconnect()
             .Build();
-
+       // loadingScreen.UpdateScreen("Loading the LED-s");
         hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
        {
            InvokeAsync(() =>
@@ -66,7 +79,10 @@
         });
 
         await hubConnection.StartAsync();
+   //     loadingScreen.UpdateScreen("Load the LED-s");
         LoadLeds();
+        
+        
     }
 
 
@@ -76,6 +92,7 @@
         {
             await hubConnection.InvokeAsync("SendLedStates");
         }
+    //    loadingScreen.Close();
     }
 
     private async void SetLed(LEDStateJsonModel led)
@@ -83,7 +100,7 @@
         if (ledStates != null)
         {
             LEDStateJsonModel? oldLed = ledStates.FirstOrDefault(l => l.LedNumber.Equals(led.LedNumber));
-            if(oldLed == null)
+            if (oldLed == null)
             {
                 ledStates.Add(led);
             }

@@ -1,7 +1,10 @@
+using LedControleLinuxBlazor.Client.Components;
 using LedControleLinuxBlazor.Components;
 using LedControleLinuxBlazor.Const;
 using LedControleLinuxBlazor.Services;
 using LedControleLinuxBlazor.Socket;
+using Microsoft.FluentUI.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components.Components.Tooltip;
 
 var options = new WebApplicationOptions
 {
@@ -19,6 +22,15 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     int port = builder.Configuration.GetSection("port").Get<int>();
     serverOptions.Listen(System.Net.IPAddress.Any, port == null ? 80 : port);
 });
+
+//fluent
+builder.Services.AddHttpClient();
+builder.Services.AddFluentUIComponents();
+builder.Services.AddScoped<ITooltipService, TooltipService>();
+builder.Services.AddScoped<IDialogService, DialogService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
+
 
 // Add services to the container.
 builder.Services.AddControllers().AddNewtonsoftJson();

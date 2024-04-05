@@ -66,7 +66,13 @@ namespace LedControleLinuxBlazor.Services
             Console.WriteLine($"Bunny methode: {led.LedNumber} Color: {led.LedColor.ToString()} Brightness: {led.Brightness}");
         }
 
-
+        public void SetLeds(List<LEDState> leds)
+        {
+            foreach(LEDState led in leds)
+            {
+                SetLed(led);
+            }
+        }
         private void LedStates_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
