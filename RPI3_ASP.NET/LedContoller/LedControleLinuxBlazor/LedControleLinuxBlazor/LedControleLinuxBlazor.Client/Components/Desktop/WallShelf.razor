@@ -1,0 +1,82 @@
+﻿<style>
+    :root {
+        --shelf-length: 95%; /* Adjust the length of the shelf */
+        --shelf-height: 20px; /* Adjust the height of the shelf */
+        --support-width: 24px; /* Width of the support */
+        --support-height: 80px; /* Total height of the support */
+        --support-thickness: 4px; /* Thickness of the support */
+    }
+
+    .shelf-container {
+        display: flex;
+        justify-content: center;
+        padding-top: 100px; /* Space from the top */
+    }
+
+    .shelf {
+        width: var(--shelf-length);
+        height: var(--shelf-height);
+        background-color: #FFA07A; /* LightSalmon color */
+        border: solid 3px #A52A2A; /* Brown color for border */
+        border-radius: 5px;
+        position: relative;
+        margin: auto; /* Centers the shelf */
+    }
+
+    .support {
+        width: var(--support-width);
+        height: var(--support-height);
+        background-color: transparent;
+        border: var(--support-thickness) solid #808080; /* Grey color for supports */
+        border-bottom: none;
+        position: absolute;
+        top: var(--shelf-height);
+    }
+
+    .support-inner {
+        width: calc(100% - 2 * var(--support-thickness));
+        height: 50%;
+        background-color: transparent;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .support-left {
+        left: 5%; 
+        top: 15px;
+        height: calc(100% + 2 * var(--support-thickness));
+    }
+
+    .support-right {
+        right: 5%; 
+        top: 15px;
+        height: calc(100% + 2 * var(--support-thickness));
+    }
+
+    .shelf-border {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        width: @Width;
+    }
+</style>
+
+<div class="shelf-border">
+    <div class="shelf-container">
+        <div class="shelf">
+            <div class="support support-left">
+                <div class="support-inner"></div>
+            </div>
+            <div class="support support-right">
+                <div class="support-inner"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public string? Width { get; set; } = "100%";
+}

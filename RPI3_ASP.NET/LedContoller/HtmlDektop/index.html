@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor with Proportionate Stand</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .monitor-container {
+    width: 500px; /* This can be changed to adjust monitor width */
+    margin: 2% auto;
+    --stand-width-percent: 15%; /* Stand width as a percentage of the monitor width */
+    --base-width-percent: 20%; /* Base width as a percentage of the monitor width */
+    --stand-height: 25px; /* Stand height */
+    --base-height: 10px; /* Base height */
+  }
+  
+  .monitor {
+    position: relative;
+    width: 100%; /* Full width of the container */
+    border: 10px solid #333;
+    border-radius: 10px;
+    padding-top: calc(100% * (9 / 16)); /* 16:9 Aspect Ratio */
+    background: url('https://via.placeholder.com/800x450') no-repeat center center;
+    background-size: cover;
+  }
+  
+  .stand {
+    position: absolute;
+    left: 50%;
+    bottom: calc(-1 * var(--stand-height)); /* Half of the stand's height */
+    transform: translateX(-50%);
+    width: var(--stand-width-percent); /* Width relative to the monitor container */
+    height: var(--stand-height);
+    background-color: #333;
+    border-radius: 5px;
+  }
+  
+  .base {
+    position: absolute;
+    left: 50%;
+    bottom: calc(-1 * var(--base-height) * 2 - var(--stand-height) / 2); /* Half of the base's height subtracting half of the stand's height */
+    transform: translateX(-50%);
+    width: var(--base-width-percent); /* Width relative to the monitor container */
+    height: var(--base-height);
+    background-color: #333;
+  }
+</style>
+</head>
+<body>
+<div class="monitor-container">
+  <div class="monitor">
+    <div class="stand"></div>
+    <div class="base"></div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
