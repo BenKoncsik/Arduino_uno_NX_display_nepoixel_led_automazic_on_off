@@ -29,6 +29,7 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<ITooltipService, TooltipService>();
 builder.Services.AddScoped<IDialogService, DialogService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IToastService, ToastService>();
 
 
 
@@ -39,10 +40,13 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddSignalR();
-ProgramConstans.Init(builder.Configuration.GetSection("LedNumber").Get<int>());
+ProgramConstans.Init(
+   ledCount: builder.Configuration.GetSection("LedNumber").Get<int>(),
+   ledControlPin: builder.Configuration.GetSection("LedControlPin").Get<int>()
+    );
 
 #if DEBUG
-builder.Services.AddSingleton<ILedStripService, LedStripWindowsService>();
+    builder.Services.AddSingleton<ILedStripService, LedStripWindowsService>();
 #else
  builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
 #endif

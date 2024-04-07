@@ -1,4 +1,5 @@
-﻿<div class="navmenu">
+﻿@rendermode InteractiveAuto
+<div class="navmenu">
     <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
     <nav class="sitenav" aria-labelledby="main-menu" onclick="document.getElementById('navmenu-toggle').click();">
         <FluentNavMenu Id="main-menu" Width="250" Collapsible="true" Title="Navigation menu" @bind-Expanded="expanded">
@@ -15,4 +16,9 @@
 
 @code {
     private bool expanded = false;
+    void ToggleMenu()
+    {
+        expanded = !expanded;
+        StateHasChanged();
+    }
 }

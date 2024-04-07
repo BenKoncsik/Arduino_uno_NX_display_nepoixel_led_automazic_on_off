@@ -5,7 +5,6 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Globalization
 @inject NavigationManager NavigationManager
-@inject Microsoft.FluentUI.AspNetCore.Components.IDialogService dialogService
 @rendermode InteractiveAuto
 <PageTitle>SLC V2</PageTitle>
 
@@ -53,17 +52,18 @@
 @code {
     private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
     private HubConnection? hubConnection;
-   // private SplashScreen loadingScreen = new SplashScreen(new DialogService());
+    private SplashScreen loadingScreen;
 
     protected override async Task OnInitializedAsync()
     {
-    //    await loadingScreen.OpenSplashDefaultAsync("Connection the server");
+        loadingScreen = new SplashScreen(DialogService);
+        await loadingScreen.OpenSplashDefaultAsync("Connection the server");
 
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
             .WithAutomaticReconnect()
             .Build();
-       // loadingScreen.UpdateScreen("Loading the LED-s");
+        loadingScreen.UpdateScreen("Loading the LED-s");
         hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
        {
            InvokeAsync(() =>
@@ -79,20 +79,28 @@
         });
 
         await hubConnection.StartAsync();
-   //     loadingScreen.UpdateScreen("Load the LED-s");
+        loadingScreen.UpdateScreen("Load the LED-s");
         LoadLeds();
-        
-        
     }
 
 
     private async void LoadLeds()
     {
-        if (hubConnection.State == HubConnectionState.Connected)
+        try
         {
-            await hubConnection.InvokeAsync("SendLedStates");
+            if (hubConnection.State == HubConnectionState.Connected)
+            {
+                await hubConnection.InvokeAsync("SendLedStates");
+            }
+        }catch(Exception ex)
+        {
+            Console.WriteLine($"error conection: {ex}");
         }
-    //    loadingScreen.Close();
+        finally
+        {
+            loadingScreen.Close();
+        }
+
     }
 
     private async void SetLed(LEDStateJsonModel led)

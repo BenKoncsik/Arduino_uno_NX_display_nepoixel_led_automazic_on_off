@@ -19,7 +19,6 @@ namespace LedControleLinuxBlazor.Services
             {
                 LedStates.Add(new LEDState(i));
             }
-            LedStates.CollectionChanged += LedStates_CollectionChanged;
         }
         public ref LEDStateCollection GetLedStates()
         {
@@ -73,30 +72,7 @@ namespace LedControleLinuxBlazor.Services
                 SetLed(led);
             }
         }
-        private void LedStates_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-            {
-                foreach (LEDState newState in e.NewItems)
-                {
-                    newState.PropertyChanged += LEDState_PropertyChanged;
-                }
-            }
-            if (e.OldItems != null)
-            {
-                foreach (LEDState oldState in e.OldItems)
-                {
-                    oldState.PropertyChanged -= LEDState_PropertyChanged;
-                }
-            }
-        }
-        private void LEDState_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(LEDState.LedColor)
-                || e.PropertyName == nameof(LEDState.Brightness))
-            {
-                SetLed((LEDState)sender);
-            }
-        }
+      
+       
     }
 }
