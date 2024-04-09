@@ -44,29 +44,38 @@
     private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
     private HubConnection? hubConnection;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
+            {
+                InvokeAsync(() =>
+                {
+                    ledStates = leds;
+                    StateHasChanged();
+                });
+            });
+
+            hubConnection.On<LEDStateJsonModel>("UpdateState", (led) =>
+            {
+                SetLed(led);
+            });
+
+            await hubConnection.StartAsync();
+            LoadLeds();
+        }
+        
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
-            .WithAutomaticReconnect()
-            .Build();
-
-        hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
-       {
-           InvokeAsync(() =>
-            {
-                ledStates = leds;
-                StateHasChanged();
-            });
-       });
-
-        hubConnection.On<LEDStateJsonModel>("UpdateState", (led) =>
-        {
-            SetLed(led);
-        });
-
-        await hubConnection.StartAsync();
-        LoadLeds();
+        
     }
 
 

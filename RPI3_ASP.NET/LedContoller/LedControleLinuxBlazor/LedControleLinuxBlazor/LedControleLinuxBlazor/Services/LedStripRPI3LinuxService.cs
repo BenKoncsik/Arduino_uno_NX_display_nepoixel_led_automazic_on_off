@@ -105,9 +105,8 @@ namespace LedControleLinuxBlazor.Services
         {
             using (var rpi = new WS281x(settings))
             {
-                Console.WriteLine($"Sett led: {led.LedNumber} color: {led.LedColor}");
                 rpi.SetLEDColor(0, led.LedNumber, led.LedColor);
-                rpi.Render();
+                {rpi.Render();}
             }
         }
         public void SetLeds(List<LEDState> leds)
@@ -116,8 +115,9 @@ namespace LedControleLinuxBlazor.Services
             {
                 foreach(LEDState led in leds)
                 {
-                    SetLed(led);
+                    rpi.SetLEDColor(0, led.LedNumber, led.LedColor);
                 }
+                rpi.Render();
             }
         }
 

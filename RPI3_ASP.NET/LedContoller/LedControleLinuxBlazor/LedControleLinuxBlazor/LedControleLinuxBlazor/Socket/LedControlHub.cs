@@ -20,7 +20,7 @@ namespace LedControleLinuxBlazor.Socket
         }
         public async Task SendLedStates()
         {
-            await Clients.All.SendAsync("GetLeds", ledStates.TransformLEDJsonModel());
+            await Clients.All.SendAsync("GetLeds", _ledStrip.GetLedStates().TransformLEDJsonModel());
         }
 
         public async Task SendLedGroups()
@@ -42,9 +42,10 @@ namespace LedControleLinuxBlazor.Socket
             await Clients.All.SendAsync("UpdateState", ledState.ConvertToLEDJsonModelState());
         }
 
-        public async Task SettLedSates(LedGroup group, LEDStateJsonModel ledstate)
+        public async Task SettLedSates(LedGroup group, LEDStateJsonModel newState)
         {
-            _ledStrip.SetLedGroup(group, new LEDState(ledstate));
+            _ledStrip.SetLedGroup(group, new LEDState(newState));
+            await SendLedStates();
         }
 
     }

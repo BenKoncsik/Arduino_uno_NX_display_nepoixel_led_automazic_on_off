@@ -3,12 +3,16 @@
 @using Microsoft.AspNetCore.SignalR.Client
 
 
-<FluentCard>
+<FluentGrid Spacing="4" Justify="JustifyContent.FlexStart" Style="padding: 4px;">
+    
     @foreach (var ledGroup in _ledGroups)
     {
-        <LedGroupCard LedGroup="ledGroup" OnActionClick="HandleButtonClicked" />
+        <FluentGridItem xs="12" sm="6" lg="4">
+            <LedGroupCard LedGroup="ledGroup" OnActionClick="HandleButtonClicked" />
+        </FluentGridItem>
     }
-</FluentCard>
+    
+</FluentGrid>
 
 @code {
     private List<LedGroup> _ledGroups = new List<LedGroup>();

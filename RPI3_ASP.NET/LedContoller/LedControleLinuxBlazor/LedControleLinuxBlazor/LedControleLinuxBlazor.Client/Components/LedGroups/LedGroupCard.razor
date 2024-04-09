@@ -4,14 +4,17 @@
 <FluentCard>
     <CardHeader>
         <h3>@LedGroup.Name</h3>
+        <FluentDivider></FluentDivider>
     </CardHeader>
     <CardBody>
-        @foreach (var action in LedGroup.LedActions)
-        {
-            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
-                @action
-            </FluentButton>
-        }
+        <div style="display: flex; width=100%">
+            @foreach (var action in LedGroup.LedActions)
+            {
+                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
+                    @action
+                </FluentButton>
+            }
+        </div>
     </CardBody>
 </FluentCard>
 
@@ -39,12 +42,12 @@
         switch (action)
         {
             case LedActions.ON:
-                led.LedState.LedColor = "#000000";
-                led.LedState.Brightness = 0;
-                break;
-            case LedActions.OFF:
                 led.LedState.LedColor = "#FFFFFF";
                 led.LedState.Brightness = 100;
+                break;
+            case LedActions.OFF:
+                led.LedState.LedColor = "#000000";
+                led.LedState.Brightness = 0;
                 break;
         }
         await OnActionClick.InvokeAsync(led);

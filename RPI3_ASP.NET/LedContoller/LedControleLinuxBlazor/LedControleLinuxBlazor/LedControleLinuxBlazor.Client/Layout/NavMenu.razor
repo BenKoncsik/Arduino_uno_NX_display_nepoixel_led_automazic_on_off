@@ -3,13 +3,13 @@
     <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
     <nav class="sitenav" aria-labelledby="main-menu" onclick="document.getElementById('navmenu-toggle').click();">
         <FluentNavMenu Id="main-menu" Width="250" Collapsible="true" Title="Navigation menu" @bind-Expanded="expanded">
-        <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Flashlight())" IconColor="Color.Accent">Home</FluentNavLink>
-        <FluentNavLink Href="/old" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Old control</FluentNavLink>
-        <FluentNavLink Href="/test" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.DeveloperBoard())" IconColor="Color.Accent">Desk Test</FluentNavLink>
-        @if (expanded)
-        {
-            <ThemeSettings />
-        }
+            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Flashlight())" IconColor="Color.Accent">Home</FluentNavLink>
+            <FluentNavLink Href="/old" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Old control</FluentNavLink>
+            <FluentNavLink Href="/test" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.DeveloperBoard())" IconColor="Color.Accent">Desk Test</FluentNavLink>
+            @if (expanded)
+            {
+                <ThemeSettings />
+            }
          </FluentNavMenu>
         
     </nav>
