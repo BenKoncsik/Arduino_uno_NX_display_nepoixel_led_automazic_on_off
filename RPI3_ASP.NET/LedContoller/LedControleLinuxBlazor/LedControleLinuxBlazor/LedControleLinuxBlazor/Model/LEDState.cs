@@ -45,6 +45,19 @@ namespace LedControleLinuxBlazor.Model
             }
         }
 
+        public LEDState(int i)
+        {
+            LedNumber = i;
+            Brightness = 0;
+            LedColor = Color.Black;
+        }
+        public LEDState(LEDStateJsonModel led)
+        {
+            LedNumber = led.LedNumber;
+            Brightness = led.Brightness;
+            SetColorFromHtml(led.LedColor);
+
+        }
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -58,13 +71,6 @@ namespace LedControleLinuxBlazor.Model
         public void SetColorFromHtml(string color)
         {
             LedColor = ColorTranslator.FromHtml(color);
-        }
-
-        public LEDState(int i)
-        {
-            LedNumber = i;
-            Brightness = 0;
-            LedColor = Color.Black;
         }
 
         private void UpdateLedBrightness()
@@ -87,5 +93,7 @@ namespace LedControleLinuxBlazor.Model
                 Brightness = this.Brightness,
             };
         }
+
+       
     }
 }

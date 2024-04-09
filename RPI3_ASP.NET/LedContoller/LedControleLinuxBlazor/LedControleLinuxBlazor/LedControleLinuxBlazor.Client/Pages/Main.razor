@@ -4,9 +4,10 @@
 @using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Globalization
+@using LedControleLinuxBlazor.Client.Components.LedGroups
 @inject NavigationManager NavigationManager
 @rendermode InteractiveAuto
-@using LedControleLinuxBlazor.Client.Components.Desktop
+
 <PageTitle>SLC V2</PageTitle>
 
 
@@ -48,8 +49,9 @@
         </FluentLayout>
     </FluentDialog>
 }
-<WallShelf Width="250px" />
-<Screen Width="250px"/>
+
+<LedGroupLayout HubConnection="hubConnection" @rendermode="InteractiveAuto"/>
+
 
 
 @code {

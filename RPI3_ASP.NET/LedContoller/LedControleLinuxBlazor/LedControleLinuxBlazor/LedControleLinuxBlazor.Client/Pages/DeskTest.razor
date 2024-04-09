@@ -1,0 +1,41 @@
+﻿@page "/test"
+@using LedControleLinuxBlazor.Client.Components.Desktop
+
+Wall: (@sliderWallValue)
+<input type="range" min="1" max="1000" @bind="sliderWallValue" class="fluent-slider" />
+Screen: (@sliderScreenValue)
+<input type="range" min="1" max="1000" @bind="sliderScreenValue" class="fluent-slider" />
+
+<WallShelf Width="@WidthWall" />
+<Screen Width="@WidthScreen"/>
+<Desk Width="@WidthWall"/>
+
+@code
+{
+    private string WidthScreen { get; set; } = "250px";
+    private string WidthWall { get; set; } = "500px";
+    private int _sliderwall = 500;
+    private int sliderWallValue
+    {
+        get => _sliderwall;
+        set
+        {
+            _sliderwall = value;
+            WidthWall = $"{_sliderwall}px";
+            StateHasChanged();
+        }
+    }
+
+    private int _slinderScreen = 500;
+
+    private int sliderScreenValue
+    {
+        get => _slinderScreen;
+        set
+        {
+            _slinderScreen = value;
+            WidthScreen = $"{_slinderScreen}px";
+            StateHasChanged();
+        }
+    }
+}

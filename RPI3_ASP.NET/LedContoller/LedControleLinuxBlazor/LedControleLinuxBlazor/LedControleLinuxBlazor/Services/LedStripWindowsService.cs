@@ -6,12 +6,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Xml;
 
 namespace LedControleLinuxBlazor.Services
 {
     public class LedStripWindowsService : ILedStripService
     {
-        private int ledCount = ProgramConstans.LedCount;
+        private int ledCount = ProgramConstants.LedCount;
         public LEDStateCollection LedStates = new LEDStateCollection();
         public LedStripWindowsService()
         {
@@ -72,7 +73,27 @@ namespace LedControleLinuxBlazor.Services
                 SetLed(led);
             }
         }
-      
-       
+
+        public void SetLedGroup(LedGroup group, LEDState state)
+        {
+            foreach (LEDState led in LedStates)
+            {
+                led.LedColor = Color.Black;
+                SetLed(led);
+            }
+            
+            foreach (var ledIndex in group.LedIndexs)
+            {
+                LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
+                if (ledState != null)
+                {
+                    ledState.LedColor = state.LedColor;
+                    ledState.Brightness = state.Brightness;
+                    SetLed(ledState);        
+                }
+            }
+        }
+
+
     }
 }

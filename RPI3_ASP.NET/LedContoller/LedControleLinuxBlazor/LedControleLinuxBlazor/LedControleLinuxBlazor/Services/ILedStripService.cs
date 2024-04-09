@@ -13,6 +13,7 @@ namespace LedControleLinuxBlazor.Services
         ref LEDStateCollection GetLedStates();
         void SetLed(LEDState led);
         void SetLeds(List<LEDState> leds);
+        void SetLedGroup(LedGroup group, LEDState state);
     }
 
 }

@@ -1,0 +1,76 @@
+﻿@using LedControleLinuxBlazor.Model
+@using LedControleLinuxBlazor.Client.Model
+@using Microsoft.AspNetCore.SignalR.Client
+
+
+<FluentCard>
+    @foreach (var ledGroup in _ledGroups)
+    {
+        <LedGroupCard LedGroup="ledGroup" OnActionClick="HandleButtonClicked" />
+    }
+</FluentCard>
+
+@code {
+    private List<LedGroup> _ledGroups = new List<LedGroup>();
+
+    private List<LedGroup> LedGroups
+    {
+        get => _ledGroups;
+        set
+        {
+            if (value != _ledGroups)
+            {
+                _ledGroups = value;
+            }
+        }
+    }
+    private HubConnection privusHubConnection { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection
+    {
+        get => privusHubConnection;
+        set
+        {
+            if (value != privusHubConnection)
+            {
+                privusHubConnection = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private bool init = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (HubConnection != null)
+        {
+            if (!HubConnection.Equals(privusHubConnection) || !init)
+            {
+                init = true;
+                HubConnection.On<List<LedGroup>>("GetGroups", (ledGroups) =>
+                {
+                    LedGroups = ledGroups;
+                });
+                await HubConnection.InvokeAsync("SendLedGroups");
+            }
+            
+        }
+    }
+
+    private async Task HandleButtonClicked(LedGroupBundle action)
+    {
+        if (HubConnection != null)
+        {
+            await HubConnection.InvokeAsync("SettLedSates", action.LedGroup, action.LedState);
+        }
+        
+    }
+    
+
+   
+
+
+}
+

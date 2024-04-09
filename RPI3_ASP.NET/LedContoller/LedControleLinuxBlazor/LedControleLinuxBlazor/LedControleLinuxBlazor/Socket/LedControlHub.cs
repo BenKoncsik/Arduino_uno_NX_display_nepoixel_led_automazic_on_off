@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using LedControleLinuxBlazor.Const;
 using LedControleLinuxBlazor.Model;
 using LedControleLinuxBlazor.Extensions;
 using LedControleLinuxBlazor.Model;
 using LedControleLinuxBlazor.Services;
 using Microsoft.AspNetCore.SignalR;
+using System.Xml;
 
 namespace LedControleLinuxBlazor.Socket
 {
@@ -21,6 +23,12 @@ namespace LedControleLinuxBlazor.Socket
             await Clients.All.SendAsync("GetLeds", ledStates.TransformLEDJsonModel());
         }
 
+        public async Task SendLedGroups()
+        {
+            await Clients.All.SendAsync("GetGroups", ProgramConstants.LedGroups);
+        }
+
+        //public async Task SettLedGroup(LedGroup goup)
         public async Task SettLedState(LEDStateJsonModel newLed)
         {
             LEDState? ledState = ledStates.FirstOrDefault(led => led.LedNumber == newLed.LedNumber);
@@ -32,6 +40,11 @@ namespace LedControleLinuxBlazor.Socket
             }
             
             await Clients.All.SendAsync("UpdateState", ledState.ConvertToLEDJsonModelState());
+        }
+
+        public async Task SettLedSates(LedGroup group, LEDStateJsonModel ledstate)
+        {
+            _ledStrip.SetLedGroup(group, new LEDState(ledstate));
         }
 
     }

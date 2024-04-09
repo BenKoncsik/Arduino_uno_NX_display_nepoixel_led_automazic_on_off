@@ -59,7 +59,7 @@
         padding-left: 15px;
         margin-right: auto;
         margin-left: auto;
-        width: @Width;
+        width: @width;
     }
 </style>
 
@@ -78,5 +78,18 @@
 
 @code
 {
-    [Parameter] public string? Width { get; set; } = "100%";
+    private string width = "100%";
+    [Parameter]
+    public string? Width
+    {
+        get => width;
+        set
+        {
+            if (value != width)
+            {
+                width = value;
+                StateHasChanged();
+            }
+        }
+    }
 }

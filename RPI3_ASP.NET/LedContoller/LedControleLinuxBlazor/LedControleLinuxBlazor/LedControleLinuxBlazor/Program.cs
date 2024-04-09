@@ -1,6 +1,7 @@
 using LedControleLinuxBlazor.Client.Components;
 using LedControleLinuxBlazor.Components;
 using LedControleLinuxBlazor.Const;
+using LedControleLinuxBlazor.Model;
 using LedControleLinuxBlazor.Services;
 using LedControleLinuxBlazor.Socket;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -40,9 +41,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddSignalR();
-ProgramConstans.Init(
+ProgramConstants.Init(
    ledCount: builder.Configuration.GetSection("LedNumber").Get<int>(),
-   ledControlPin: builder.Configuration.GetSection("LedControlPin").Get<int>()
+   ledControlPin: builder.Configuration.GetSection("LedControlPin").Get<int>(),
+    ledGroups: builder.Configuration.GetSection("LedGroups").Get<List<LedGroup>>() ?? new List<LedGroup>()
     );
 
 #if DEBUG

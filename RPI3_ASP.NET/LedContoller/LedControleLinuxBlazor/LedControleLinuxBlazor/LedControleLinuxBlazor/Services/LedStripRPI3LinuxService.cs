@@ -22,8 +22,8 @@ namespace LedControleLinuxBlazor.Services
         //private SpiConnectionSettings settings;
         private rpi_ws281x.Settings settings;
         public LEDStateCollection LedStates = new LEDStateCollection();
-        private int LedCount = ProgramConstans.LedCount;
-        private int LedControlPin = ProgramConstans.LedControlPin;
+        private int LedCount = ProgramConstants.LedCount;
+        private int LedControlPin = ProgramConstants.LedControlPin;
         private SpiDevice spi;
         //  private Ws2812b device;
         private WS281x device;
@@ -34,7 +34,7 @@ namespace LedControleLinuxBlazor.Services
                 LedStates.Add(new LEDState(i));
             }
             settings = Settings.CreateDefaultSettings();
-            settings.Channels[0] = new Channel(LedCount, ProgramConstans.LedControlPin, 255, false, StripType.WS2812_STRIP);
+            settings.Channels[0] = new Channel(LedCount, ProgramConstants.LedControlPin, 255, false, StripType.WS2812_STRIP);
             Start();
         }
 
@@ -125,6 +125,26 @@ namespace LedControleLinuxBlazor.Services
         {
             return ref LedStates;
         }
-       
+
+        public void SetLedGroup(LedGroup group, LEDState state)
+        {
+            foreach (LEDState led in LedStates)
+            {
+                led.LedColor = Color.Black;
+                SetLed(led);
+            }
+
+            foreach (var ledIndex in group.LedIndexs)
+            {
+                LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
+                if (ledState != null)
+                {
+                    ledState.LedColor = state.LedColor;
+                    ledState.Brightness = state.Brightness;
+                    SetLed(ledState);
+                }
+            }
+        }
+
     }
 }

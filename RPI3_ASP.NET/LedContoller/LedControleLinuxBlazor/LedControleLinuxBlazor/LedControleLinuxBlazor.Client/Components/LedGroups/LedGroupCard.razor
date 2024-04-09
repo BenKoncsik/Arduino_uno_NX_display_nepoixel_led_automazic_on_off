@@ -1,0 +1,52 @@
+﻿@using LedControleLinuxBlazor.Client.Model
+@using LedControleLinuxBlazor.Const
+@using LedControleLinuxBlazor.Model
+<FluentCard>
+    <CardHeader>
+        <h3>@LedGroup.Name</h3>
+    </CardHeader>
+    <CardBody>
+        @foreach (var action in LedGroup.LedActions)
+        {
+            <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
+                @action
+            </FluentButton>
+        }
+    </CardBody>
+</FluentCard>
+
+@code {
+    [Parameter]
+    public LedGroup LedGroup { get; set; }
+
+    private LedGroup previousLedGroup;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LedGroup != previousLedGroup)
+        {
+            previousLedGroup = LedGroup;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<LedGroupBundle> OnActionClick { get; set; }
+
+    private async Task HandleAction(string action)
+    {
+        LedGroupBundle led = new LedGroupBundle(LedGroup);
+        led.LedState.LedNumber = -1;
+        switch (action)
+        {
+            case LedActions.ON:
+                led.LedState.LedColor = "#000000";
+                led.LedState.Brightness = 0;
+                break;
+            case LedActions.OFF:
+                led.LedState.LedColor = "#FFFFFF";
+                led.LedState.Brightness = 100;
+                break;
+        }
+        await OnActionClick.InvokeAsync(led);
+    }
+}

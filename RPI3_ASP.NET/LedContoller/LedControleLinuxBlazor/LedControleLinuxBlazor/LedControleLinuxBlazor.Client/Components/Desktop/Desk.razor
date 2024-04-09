@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adjustable Desk with Depth</title>
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-<style>
+﻿<style>
   :root {
-    --desk-width: 80%; /* Adjust the width as needed */
+    --desk-width: @width; /* Adjust the width as needed */
     --desk-height: 150px; /* Adjust the height of the desk top */
     --desk-leg-height: 300px; /* Adjust the height of the legs */
     --desk-depth: 10px; /* Depth of the desk top */
@@ -49,13 +42,25 @@
     right: 10%; /* Position from the right side, adjust as needed */
   }
 </style>
-</head>
-<body>
 <div class="desk">
-  <div class="desk-leg left"></div>
-  <div class="desk-leg right"></div>
+    <div class="desk-leg left"></div>
+    <div class="desk-leg right"></div>
 </div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+@code
+{
+    private string width = "100%";
+    [Parameter]
+    public string? Width
+    {
+        get => width;
+        set
+        {
+            if (value != width)
+            {
+                width = value;
+                StateHasChanged();
+            }
+        }
+    }
+}
