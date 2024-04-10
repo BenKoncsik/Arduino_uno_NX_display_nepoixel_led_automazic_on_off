@@ -7,10 +7,11 @@
         <FluentDivider></FluentDivider>
     </CardHeader>
     <CardBody>
-        <div style="display: flex; width=100%">
+        <div style="display: flex; justify-content: center; width=100%">
             @foreach (var action in LedGroup.LedActions)
             {
-                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
+                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))" 
+                    Style="margin: 5px 10px; width: 40%">
                     @action
                 </FluentButton>
             }
@@ -24,17 +25,18 @@
 
     private LedGroup previousLedGroup;
 
+    [Parameter]
+    public EventCallback<LedGroupBundle> OnActionClick { get; set; }
+
+    private string buttonPercentage { get; set; } = "100";
     protected override async Task OnParametersSetAsync()
     {
         if (LedGroup != previousLedGroup)
         {
             previousLedGroup = LedGroup;
+            buttonPercentage = (100 / LedGroup.LedActions.Count).ToString();
         }
     }
-
-    [Parameter]
-    public EventCallback<LedGroupBundle> OnActionClick { get; set; }
-
     private async Task HandleAction(string action)
     {
         LedGroupBundle led = new LedGroupBundle(LedGroup);
