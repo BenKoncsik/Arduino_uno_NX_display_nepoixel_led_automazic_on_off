@@ -52,21 +52,37 @@
     private int brightness
     {
         get => _brightness;
-        set
-        {
-            if(value != _brightness)
-            {
-                _brightness = value;
-                HandleAction(LedActions.BRIGHTNESS);
-            }
-        }
+        set => SetBrightnessDebounced(value);
     }
+    private CancellationTokenSource _debounceCts = new CancellationTokenSource();
     protected override async Task OnParametersSetAsync()
     {
         if (LedGroup != previousLedGroup)
         {
             previousLedGroup = LedGroup;
             buttonPercentage = (100 / LedGroup.LedActions.Count).ToString();
+        }
+    }
+    private async void SetBrightnessDebounced(int value)
+    {
+        if (value != _brightness)
+        {
+            _brightness = value;
+            _debounceCts.Cancel();
+            _debounceCts.Dispose();
+            _debounceCts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(100, _debounceCts.Token);
+                HandleAction(LedActions.BRIGHTNESS);
+            }
+            catch (TaskCanceledException)
+            {
+              #if DEBUG
+              Console.WriteLine("Stop Task waiter");
+              #endif
+            }
         }
     }
     
