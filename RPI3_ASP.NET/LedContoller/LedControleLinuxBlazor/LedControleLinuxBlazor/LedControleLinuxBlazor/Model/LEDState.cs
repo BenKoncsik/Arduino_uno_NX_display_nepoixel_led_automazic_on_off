@@ -56,6 +56,9 @@ namespace LedControleLinuxBlazor.Model
             LedNumber = led.LedNumber;
             Brightness = led.Brightness;
             SetColorFromHtml(led.LedColor);
+#if DEBUG
+            Console.WriteLine($"{led.LedNumber}--> Color: {led.LedColor} Brightness: {led.Brightness}");
+#endif
 
         }
         protected virtual void OnPropertyChanged(string propertyName)
@@ -75,11 +78,12 @@ namespace LedControleLinuxBlazor.Model
 
         private void UpdateLedBrightness()
         {
+            double brightnessFactor = brightness / 100.0;
             Color newColor = Color.FromArgb(
                 _ledColor.A,
-                (byte)(_ledColor.R * brightness),
-                (byte)(_ledColor.G * brightness),
-                (byte)(_ledColor.B * brightness)
+                (byte)(_ledColor.R * brightnessFactor),
+                (byte)(_ledColor.G * brightnessFactor),
+                (byte)(_ledColor.B * brightnessFactor)
             );
             LedColor = newColor;
         }

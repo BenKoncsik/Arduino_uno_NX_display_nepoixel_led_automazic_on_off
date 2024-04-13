@@ -10,11 +10,11 @@ using System.Xml;
 
 namespace LedControleLinuxBlazor.Services
 {
-    public class LedStripWindowsService : ILedStripService
+    public class LedStripBunnyService : ILedStripService
     {
         private int ledCount = ProgramConstants.LedCount;
         public LEDStateCollection LedStates = new LEDStateCollection();
-        public LedStripWindowsService()
+        public LedStripBunnyService()
         {
             for (int i = 0; i < ledCount; i++)
             {
@@ -76,6 +76,7 @@ namespace LedControleLinuxBlazor.Services
 
         public void SetLedGroup(LedGroup group, LEDState state)
         {
+            Console.WriteLine($"State Color: {state.LedColor}");
             foreach (LEDState led in LedStates)
             {
                 led.LedColor = Color.Black;
@@ -87,8 +88,10 @@ namespace LedControleLinuxBlazor.Services
                 LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
                 if (ledState != null)
                 {
+                    Console.WriteLine($"State color before: {state.LedColor}");
                     ledState.LedColor = state.LedColor;
                     ledState.Brightness = state.Brightness;
+                    Console.WriteLine($"State Color after: {ledState.LedColor}");
                     SetLed(ledState);        
                 }
             }

@@ -6,16 +6,35 @@
         <h3>@LedGroup.Name</h3>
         <FluentDivider></FluentDivider>
     </CardHeader>
-    <CardBody>
-        <div style="display: flex; justify-content: center; width=100%">
-            @foreach (var action in LedGroup.LedActions)
+    <CardBody>   
+        <FluentGrid Spacing="4" Justify="JustifyContent.Center" Style="padding: 4px;">
+            @foreach (string action in LedGroup.LedActions)
             {
-                <FluentButton Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))" 
-                    Style="margin: 5px 10px; width: 40%">
-                    @action
-                </FluentButton>
+                @switch (action)
+                {
+                    case LedActions.BRIGHTNESS:
+                    <FluentGridItem xs="12" Justify="JustifyContent.Center">
+                            <FluentSlider Orientation="Orientation.Horizontal" Min="0" Max="100" Step="1"
+                                          @bind-Value=brightness Style="margin: 20px 0">
+                                <FluentSliderLabel Position="0">0%</FluentSliderLabel>
+                                <FluentSliderLabel Position="25">25%</FluentSliderLabel>
+                                <FluentSliderLabel Position="50">50%</FluentSliderLabel>
+                                <FluentSliderLabel Position="75">75%</FluentSliderLabel>
+                                <FluentSliderLabel Position="100">100%</FluentSliderLabel>
+                            </FluentSlider>
+                        </FluentGridItem>
+                        break;
+                    default:
+                    <FluentGridItem xs="12" sm="6" Style="margin: 20px 0;" Justify="JustifyContent.FlexStart">
+                        <FluentButton Style="width: 100%"  Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
+                                @action
+                            </FluentButton>
+                        </FluentGridItem>
+                        
+                    break;
+                }
             }
-        </div>
+        </FluentGrid>
     </CardBody>
 </FluentCard>
 
@@ -29,6 +48,19 @@
     public EventCallback<LedGroupBundle> OnActionClick { get; set; }
 
     private string buttonPercentage { get; set; } = "100";
+    private int _brightness = 100;
+    private int brightness
+    {
+        get => _brightness;
+        set
+        {
+            if(value != _brightness)
+            {
+                _brightness = value;
+                HandleAction(LedActions.BRIGHTNESS);
+            }
+        }
+    }
     protected override async Task OnParametersSetAsync()
     {
         if (LedGroup != previousLedGroup)
@@ -37,6 +69,7 @@
             buttonPercentage = (100 / LedGroup.LedActions.Count).ToString();
         }
     }
+    
     private async Task HandleAction(string action)
     {
         LedGroupBundle led = new LedGroupBundle(LedGroup);
@@ -44,8 +77,12 @@
         switch (action)
         {
             case LedActions.ON:
-                led.LedState.LedColor = "#FFFFFF";
+                led.LedState.LedColor = LedGroup.LedColor;
                 led.LedState.Brightness = 100;
+                break;
+            case LedActions.BRIGHTNESS:
+                led.LedState.LedColor = LedGroup.LedColor;
+                led.LedState.Brightness = brightness;
                 break;
             case LedActions.OFF:
                 led.LedState.LedColor = "#000000";

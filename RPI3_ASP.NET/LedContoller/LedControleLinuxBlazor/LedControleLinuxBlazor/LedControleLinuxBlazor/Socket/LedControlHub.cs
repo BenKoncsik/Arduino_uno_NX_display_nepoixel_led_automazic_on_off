@@ -44,6 +44,7 @@ namespace LedControleLinuxBlazor.Socket
 
         public async Task SettLedSates(LedGroup group, LEDStateJsonModel newState)
         {
+           
             _ledStrip.SetLedGroup(group, new LEDState(newState));
             await SendLedStates();
         }

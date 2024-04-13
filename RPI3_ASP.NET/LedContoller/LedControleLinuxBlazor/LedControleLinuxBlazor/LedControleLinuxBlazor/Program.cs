@@ -48,7 +48,7 @@ ProgramConstants.Init(
     );
 
 #if DEBUG
-    builder.Services.AddSingleton<ILedStripService, LedStripWindowsService>();
+    builder.Services.AddSingleton<ILedStripService, LedStripBunnyService>();
 #else
  builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
 #endif
