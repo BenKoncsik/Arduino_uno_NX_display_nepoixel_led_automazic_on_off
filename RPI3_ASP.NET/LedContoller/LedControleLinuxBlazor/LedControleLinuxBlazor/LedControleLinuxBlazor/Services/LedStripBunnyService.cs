@@ -14,8 +14,10 @@ namespace LedControleLinuxBlazor.Services
     {
         private int ledCount = ProgramConstants.LedCount;
         public LEDStateCollection LedStates = new LEDStateCollection();
+        public LEDGroupStateCollection LedGroupStates = new LEDGroupStateCollection();
         public LedStripBunnyService()
         {
+            LedGroupStates.UpdateFromList(ProgramConstants.LedGroups);
             for (int i = 0; i < ledCount; i++)
             {
                 LedStates.Add(new LEDState(i));
@@ -24,6 +26,11 @@ namespace LedControleLinuxBlazor.Services
         public ref LEDStateCollection GetLedStates()
         {
             return ref LedStates;
+        }
+
+        public ref LEDGroupStateCollection GetLedGroups()
+        {
+            return ref LedGroupStates;
         }
 
         public bool OFF()
@@ -74,9 +81,9 @@ namespace LedControleLinuxBlazor.Services
             }
         }
 
-        public void SetLedGroup(LedGroup group, LEDState state)
+        public void SetLedGroup(LedGroup group)
         {
-            Console.WriteLine($"State Color: {state.LedColor}");
+            Console.WriteLine($"State Color: {group.GroupState.LedColor}");
             foreach (LEDState led in LedStates)
             {
                 led.LedColor = Color.Black;
@@ -88,9 +95,9 @@ namespace LedControleLinuxBlazor.Services
                 LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
                 if (ledState != null)
                 {
-                    Console.WriteLine($"State color before: {state.LedColor}");
-                    ledState.LedColor = state.LedColor;
-                    ledState.Brightness = state.Brightness;
+                    Console.WriteLine($"State color before: {group.GroupState.LedColor}");
+                    ledState.LedColor = ColorTranslator.FromHtml(group.GroupState.LedColor);
+                    ledState.Brightness = group.GroupState.Brightness;
                     Console.WriteLine($"State Color after: {ledState.LedColor}");
                     SetLed(ledState);        
                 }

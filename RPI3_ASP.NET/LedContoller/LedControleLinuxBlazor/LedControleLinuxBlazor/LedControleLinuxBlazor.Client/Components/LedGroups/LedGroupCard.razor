@@ -39,35 +39,43 @@
 </FluentCard>
 
 @code {
-    [Parameter]
-    public LedGroup LedGroup { get; set; }
 
-    private LedGroup previousLedGroup;
+    private LedGroup _currentLedGroup;
 
     [Parameter]
-    public EventCallback<LedGroupBundle> OnActionClick { get; set; }
+    public LedGroup LedGroup
+    {
+        get => _currentLedGroup;
+        set
+        {
+            if (!Equals(value, _currentLedGroup))
+            {
+                _currentLedGroup = value;
+                buttonPercentage = (100 / (_currentLedGroup?.LedActions.Count ?? 1)).ToString();
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<LedGroup> OnActionClick { get; set; }
 
     private string buttonPercentage { get; set; } = "100";
-    private int _brightness = 100;
-    private int brightness
+    private float brightness
     {
-        get => _brightness;
+        get => LedGroup.GroupState.Brightness;
         set => SetBrightnessDebounced(value);
     }
     private CancellationTokenSource _debounceCts = new CancellationTokenSource();
     protected override async Task OnParametersSetAsync()
     {
-        if (LedGroup != previousLedGroup)
-        {
-            previousLedGroup = LedGroup;
-            buttonPercentage = (100 / LedGroup.LedActions.Count).ToString();
-        }
+
     }
-    private async void SetBrightnessDebounced(int value)
+    private async void SetBrightnessDebounced(float value)
     {
-        if (value != _brightness)
+        if (value != LedGroup.GroupState.Brightness)
         {
-            _brightness = value;
+            LedGroup.GroupState.Brightness = value;
             _debounceCts.Cancel();
             _debounceCts.Dispose();
             _debounceCts = new CancellationTokenSource();
@@ -88,23 +96,21 @@
     
     private async Task HandleAction(string action)
     {
-        LedGroupBundle led = new LedGroupBundle(LedGroup);
-        led.LedState.LedNumber = -1;
         switch (action)
         {
             case LedActions.ON:
-                led.LedState.LedColor = LedGroup.LedColor;
-                led.LedState.Brightness = 100;
+                LedGroup.GroupState.Brightness = 100;
+                LedGroup.GroupState.LedColor = "#FFFFFF";
                 break;
             case LedActions.BRIGHTNESS:
-                led.LedState.LedColor = LedGroup.LedColor;
-                led.LedState.Brightness = brightness;
+                LedGroup.GroupState.LedColor = LedGroup.LedColor;
+                LedGroup.GroupState.Brightness = brightness;
                 break;
             case LedActions.OFF:
-                led.LedState.LedColor = "#000000";
-                led.LedState.Brightness = 0;
+                LedGroup.GroupState.LedColor = "#000000";
+                LedGroup.GroupState.Brightness = 0;
                 break;
         }
-        await OnActionClick.InvokeAsync(led);
+        await OnActionClick.InvokeAsync(LedGroup);
     }
 }

@@ -13,10 +13,12 @@ namespace LedControleLinuxBlazor.Socket
     {
         private readonly ILedStripService _ledStrip;
         private LEDStateCollection ledStates;
+        private LEDGroupStateCollection ledGroupStates;
         public LedControlHub(ILedStripService ledStrip)
         {
             _ledStrip = ledStrip;
             ledStates = _ledStrip.GetLedStates();
+            ledGroupStates = _ledStrip.GetLedGroups();
         }
         public async Task SendLedStates()
         {
@@ -25,10 +27,10 @@ namespace LedControleLinuxBlazor.Socket
 
         public async Task SendLedGroups()
         {
-            await Clients.All.SendAsync("GetGroups", ProgramConstants.LedGroups);
+            await Clients.All.SendAsync("GetGroups", ledGroupStates);
         }
 
-        //public async Task SettLedGroup(LedGroup goup)
+        
         public async Task SettLedState(LEDStateJsonModel newLed)
         {
             LEDState? ledState = ledStates.FirstOrDefault(led => led.LedNumber == newLed.LedNumber);
@@ -42,12 +44,16 @@ namespace LedControleLinuxBlazor.Socket
             await Clients.All.SendAsync("UpdateState", ledState.ConvertToLEDJsonModelState());
         }
 
-        public async Task SettLedSates(LedGroup group, LEDStateJsonModel newState)
+        public async Task SettLedSates(LedGroup group)
         {
-           
-            _ledStrip.SetLedGroup(group, new LEDState(newState));
-            await SendLedGroups();
+            LedGroup ledgroup = ledGroupStates.FirstOrDefault(grup => group.GroupState.LedNumber == grup.GroupState.LedNumber);
+            if (ledgroup != null)
+            {
+                ledgroup.GroupState = group.GroupState;
+                _ledStrip.SetLedGroup(group);
+            }
             await SendLedStates();
+            await Clients.All.SendAsync("UpdateGroup", group);
         }
 
     }

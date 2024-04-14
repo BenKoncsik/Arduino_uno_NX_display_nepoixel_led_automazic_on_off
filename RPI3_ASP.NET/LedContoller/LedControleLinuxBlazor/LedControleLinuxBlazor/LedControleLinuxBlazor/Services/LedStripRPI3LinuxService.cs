@@ -22,6 +22,7 @@ namespace LedControleLinuxBlazor.Services
         //private SpiConnectionSettings settings;
         private rpi_ws281x.Settings settings;
         public LEDStateCollection LedStates = new LEDStateCollection();
+        public LEDGroupStateCollection LedGroupStates = new LEDGroupStateCollection();
         private int LedCount = ProgramConstants.LedCount;
         private int LedControlPin = ProgramConstants.LedControlPin;
         private SpiDevice spi;
@@ -29,6 +30,7 @@ namespace LedControleLinuxBlazor.Services
         private WS281x device;
         public LedStripRPI3LinuxService()
         {
+            LedGroupStates.UpdateFromList(ProgramConstants.LedGroups);
             for (int i = 0; i < LedCount; i++)
             {
                 LedStates.Add(new LEDState(i));
@@ -106,7 +108,7 @@ namespace LedControleLinuxBlazor.Services
             using (var rpi = new WS281x(settings))
             {
                 rpi.SetLEDColor(0, led.LedNumber, led.LedColor);
-                {rpi.Render();}
+                rpi.Render();
             }
         }
         public void SetLeds(List<LEDState> leds)
@@ -126,24 +128,33 @@ namespace LedControleLinuxBlazor.Services
             return ref LedStates;
         }
 
-        public void SetLedGroup(LedGroup group, LEDState state)
+        public ref LEDGroupStateCollection GetLedGroups()
         {
-            foreach (LEDState led in LedStates)
+            return ref LedGroupStates;
+        }
+        public void SetLedGroup(LedGroup group)
+        {
+            using (var rpi = new WS281x(settings))
             {
-                led.LedColor = Color.Black;
-                SetLed(led);
-            }
-
-            foreach (var ledIndex in group.LedIndexs)
-            {
-                LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
-                if (ledState != null)
+                foreach (LEDState led in LedStates)
                 {
-                    ledState.LedColor = state.LedColor;
-                    ledState.Brightness = state.Brightness;
-                    SetLed(ledState);
+                    rpi.SetLEDColor(0, led.LedNumber, Color.Black);
                 }
+                foreach (var ledIndex in group.LedIndexs)
+                {
+                    LEDState? ledState = LedStates.FirstOrDefault(led => led.LedNumber == ledIndex);
+                    if (ledState != null)
+                    {
+                        ledState.LedColor = ColorTranslator.FromHtml(group.GroupState.LedColor);
+                        ledState.Brightness = group.GroupState.Brightness;
+                        rpi.SetLEDColor(0, ledState.LedNumber, ledState.LedColor);
+                    }
+                }
+                rpi.Render();
             }
+            
+
+            
         }
 
     }

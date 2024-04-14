@@ -8,5 +8,6 @@ namespace LedControleLinuxBlazor.Model
         public List<int> LedIndexs { get; set; }
         public List<string> LedActions { get; set; }
         public string LedColor { get; set; }
+        public LEDStateJsonModel GroupState { get; set; } = new LEDStateJsonModel();
     }
 }
