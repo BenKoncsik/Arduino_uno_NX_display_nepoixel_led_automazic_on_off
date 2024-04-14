@@ -46,6 +46,7 @@ namespace LedControleLinuxBlazor.Socket
         {
            
             _ledStrip.SetLedGroup(group, new LEDState(newState));
+            await SendLedGroups();
             await SendLedStates();
         }
 
