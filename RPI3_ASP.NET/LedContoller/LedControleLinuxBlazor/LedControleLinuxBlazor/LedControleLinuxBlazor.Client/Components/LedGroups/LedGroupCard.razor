@@ -1,0 +1,116 @@
+﻿@using LedControleLinuxBlazor.Client.Model
+@using LedControleLinuxBlazor.Const
+@using LedControleLinuxBlazor.Model
+<FluentCard>
+    <CardHeader>
+        <h3>@LedGroup.Name</h3>
+        <FluentDivider></FluentDivider>
+    </CardHeader>
+    <CardBody>   
+        <FluentGrid Spacing="4" Justify="JustifyContent.Center" Style="padding: 4px;">
+            @foreach (string action in LedGroup.LedActions)
+            {
+                @switch (action)
+                {
+                    case LedActions.BRIGHTNESS:
+                    <FluentGridItem xs="12" Justify="JustifyContent.Center">
+                            <FluentSlider Orientation="Orientation.Horizontal" Min="0" Max="100" Step="1"
+                                          @bind-Value=brightness Style="margin: 20px 0">
+                                <FluentSliderLabel Position="0">0%</FluentSliderLabel>
+                                <FluentSliderLabel Position="25">25%</FluentSliderLabel>
+                                <FluentSliderLabel Position="50">50%</FluentSliderLabel>
+                                <FluentSliderLabel Position="75">75%</FluentSliderLabel>
+                                <FluentSliderLabel Position="100">100%</FluentSliderLabel>
+                            </FluentSlider>
+                        </FluentGridItem>
+                        break;
+                    default:
+                    <FluentGridItem xs="12" sm="6" Style="margin: 20px 0;" Justify="JustifyContent.FlexStart">
+                        <FluentButton Style="width: 100%"  Appearance="Appearance.Accent" OnClick="@(() => HandleAction(action))">
+                                @action
+                            </FluentButton>
+                        </FluentGridItem>
+                        
+                    break;
+                }
+            }
+        </FluentGrid>
+    </CardBody>
+</FluentCard>
+
+@code {
+
+    private LedGroup _currentLedGroup;
+
+    [Parameter]
+    public LedGroup LedGroup
+    {
+        get => _currentLedGroup;
+        set
+        {
+            if (!Equals(value, _currentLedGroup))
+            {
+                _currentLedGroup = value;
+                buttonPercentage = (100 / (_currentLedGroup?.LedActions.Count ?? 1)).ToString();
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<LedGroup> OnActionClick { get; set; }
+
+    private string buttonPercentage { get; set; } = "100";
+    private float brightness
+    {
+        get => LedGroup.GroupState.Brightness;
+        set => SetBrightnessDebounced(value);
+    }
+    private CancellationTokenSource _debounceCts = new CancellationTokenSource();
+    protected override async Task OnParametersSetAsync()
+    {
+
+    }
+    private async void SetBrightnessDebounced(float value)
+    {
+        if (value != LedGroup.GroupState.Brightness)
+        {
+            LedGroup.GroupState.Brightness = value;
+            _debounceCts.Cancel();
+            _debounceCts.Dispose();
+            _debounceCts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(100, _debounceCts.Token);
+                HandleAction(LedActions.BRIGHTNESS);
+            }
+            catch (TaskCanceledException)
+            {
+              #if DEBUG
+              Console.WriteLine("Stop Task waiter");
+              #endif
+            }
+        }
+    }
+    
+    private async Task HandleAction(string action)
+    {
+        switch (action)
+        {
+            case LedActions.ON:
+                LedGroup.GroupState.Brightness = 100;
+                LedGroup.GroupState.LedColor = "#FFFFFF";
+                break;
+            case LedActions.BRIGHTNESS:
+                LedGroup.GroupState.LedColor = LedGroup.LedColor;
+                LedGroup.GroupState.Brightness = brightness;
+                break;
+            case LedActions.OFF:
+                LedGroup.GroupState.LedColor = "#000000";
+                LedGroup.GroupState.Brightness = 0;
+                break;
+        }
+        await OnActionClick.InvokeAsync(LedGroup);
+    }
+}

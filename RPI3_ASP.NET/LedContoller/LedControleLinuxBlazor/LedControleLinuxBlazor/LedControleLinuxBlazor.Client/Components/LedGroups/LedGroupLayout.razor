@@ -1,0 +1,83 @@
+﻿@using LedControleLinuxBlazor.Model
+@using LedControleLinuxBlazor.Client.Model
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Collections.ObjectModel
+
+
+<FluentGrid Spacing="4" Justify="JustifyContent.Center" Style="padding: 4px;">
+    
+    @foreach (LedGroup ledGroup in LedGroups)
+    {
+        <FluentGridItem xs="12" sm="6" lg="4">
+            <LedGroupCard LedGroup="ledGroup" OnActionClick="HandleButtonClicked" />
+        </FluentGridItem>
+    }
+    
+</FluentGrid>
+
+@code {
+    private ObservableCollection<LedGroup> LedGroups = new ObservableCollection<LedGroup>();
+
+    private HubConnection privusHubConnection { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection
+    {
+        get => privusHubConnection;
+        set
+        {
+            if (value != privusHubConnection)
+            {
+                privusHubConnection = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private bool init = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (HubConnection != null)
+        {
+            if (!HubConnection.Equals(privusHubConnection) || !init)
+            {
+                init = true;
+                HubConnection.On<ObservableCollection<LedGroup>>("GetGroups", (ledGroups) =>
+                {
+                    LedGroups.Clear();
+                    foreach (var group in ledGroups)
+                    {
+                        LedGroups.Add(group);
+                    }
+                });
+                HubConnection.On<LedGroup>("UpdateGroup", (ledGroup) =>
+                {
+                    var group = LedGroups.FirstOrDefault(x => x.GroupState.LedNumber == ledGroup.GroupState.LedNumber);
+                    if (group != null)
+                    {
+                        group.GroupState.Brightness = ledGroup.GroupState.Brightness;
+                        group.GroupState.LedColor = ledGroup.GroupState.LedColor;
+                    }
+                });
+                await HubConnection.InvokeAsync("SendLedGroups");
+            }
+            
+        }
+    }
+
+    private async Task HandleButtonClicked(LedGroup action)
+    {
+        if (HubConnection != null)
+        {
+            await HubConnection.InvokeAsync("SettLedSates", action);
+        }
+        
+    }
+    
+
+   
+
+
+}
+

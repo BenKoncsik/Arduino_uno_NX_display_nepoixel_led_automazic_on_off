@@ -1,0 +1,66 @@
+﻿<style>
+  :root {
+    --desk-width: @width; /* Adjust the width as needed */
+    --desk-height: 150px; /* Adjust the height of the desk top */
+    --desk-leg-height: 300px; /* Adjust the height of the legs */
+    --desk-depth: 10px; /* Depth of the desk top */
+  }
+
+  .desk {
+    position: relative;
+    width: var(--desk-width);
+    height: var(--desk-height);
+    margin: 50px auto; /* Centers the desk on the page with some margin */
+    background-color: #D7CCC8; /* Wood color, replace with actual texture if needed */
+    border-top: solid 6px #5D4037; /* Darker shade for the top border */
+    box-shadow: 0 var(--desk-depth) 0 0 #5D4037; /* Simulate depth */
+  }
+
+  .desk-leg {
+    position: absolute;
+	top: calc(var(--desk-height) + var(--desk-depth) - 6px);
+    width: 20px; /* Width of the desk leg */
+    height: calc(var(--desk-leg-height) * 0.40);
+    background-color: #757575; /* Metal color, replace with actual texture if needed */
+    border: 3px solid #616161; /* Slightly darker shade for a 3D effect */
+  }
+
+  .desk-leg::after { /* Decorative lines to simulate the details on the leg */
+    content: '';
+    display: block;
+    width: 14px; /* Slightly thinner than the leg itself for the 3D effect */
+    height: 2px;
+    background-color: #616161;
+    margin: 10px auto; /* Evenly spaced within the leg */
+  }
+
+  .desk-leg.left {
+    left: 10%; /* Position from the left side, adjust as needed */
+  }
+
+  .desk-leg.right {
+    right: 10%; /* Position from the right side, adjust as needed */
+  }
+</style>
+<div class="desk">
+    <div class="desk-leg left"></div>
+    <div class="desk-leg right"></div>
+</div>
+
+@code
+{
+    private string width = "100%";
+    [Parameter]
+    public string? Width
+    {
+        get => width;
+        set
+        {
+            if (value != width)
+            {
+                width = value;
+                StateHasChanged();
+            }
+        }
+    }
+}

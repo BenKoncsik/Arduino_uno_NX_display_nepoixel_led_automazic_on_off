@@ -1,0 +1,8 @@
+ sudo nano /boot/config.txt
+
+dtparam=spi=on
+core_freq=250
+core_freq_min=250
+
+
+https://jamesnaylor.dev/Posts/Read/pi-ws2812-with-net-core
