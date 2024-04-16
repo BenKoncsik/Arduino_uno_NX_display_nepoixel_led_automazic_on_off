@@ -1,8 +1,10 @@
 ﻿@using LedControleLinuxBlazor.Client.Model
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Collections.ObjectModel
+@using LedControleLinuxBlazor.Client.Components.SplashScreen
 @implements IDisposable
 @inject IComponentMsgService ComponentMsgService
+@inject SplashScreen loadingScreen
 
 <FluentGrid Spacing="4" Justify="JustifyContent.Center" Style="padding: 4px;">
     
@@ -23,6 +25,7 @@
     {
         if (firstRender)
         {
+            loadingScreen.UpdateScreen("Load the LED groups");
             hubConnection = await SocketService.StartConnectionAsync();
             ComponentMsgService.RefreshRequested += RefreshComponent;
             hubConnection.On<ObservableCollection<LedGroup>>("GetGroups", (ledGroups) =>
@@ -45,6 +48,14 @@
                 InvokeAsync(StateHasChanged);
             });
             await RefreshComponent();
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+                ComponentMsgService.OnLoaded("LedGroupLayout");
         }
     }
 

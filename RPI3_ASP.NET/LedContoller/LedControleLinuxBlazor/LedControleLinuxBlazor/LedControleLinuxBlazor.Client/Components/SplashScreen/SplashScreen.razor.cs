@@ -50,6 +50,10 @@ namespace LedControleLinuxBlazor.Client.Components.SplashScreen
                 var splashScreen = (SplashScreenContent)_dialog.Instance.Content;
                 splashScreen.UpdateLabels(loadingText: msg);
             }
+            else
+            {
+               await OpenSplashDefaultAsync("SLC", "",msg);
+            }
         }
         private void OpenSplashDefault()
         {

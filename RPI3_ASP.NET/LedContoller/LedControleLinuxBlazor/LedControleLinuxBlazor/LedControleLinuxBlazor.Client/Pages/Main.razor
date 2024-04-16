@@ -16,9 +16,9 @@
                          Direction="@(PullDirection.Down)"
                          OnRefreshAsync="OnRefreshAsync">
 
-       
-        <LedStateLayout @rendermode="InteractiveAuto"/>
-        <LedGroupLayout @rendermode="InteractiveAuto"/>
+
+            <LedStateLayout @rendermode="InteractiveAuto"/>
+        <LedGroupLayout @rendermode="InteractiveAuto" />
 
     </FluentPullToRefresh>
 </FluentStack>
@@ -26,7 +26,7 @@
 @code {
     
     private HubConnection? hubConnection;
-   
+    private int loadedComponentsCount = 0;
     public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
     private bool enabledRefresh = true;
 
@@ -35,6 +35,7 @@
         if (firstRender)
         {
            hubConnection = await SocketService.StartConnectionAsync();
+            ComponentMsgService.ComponentLoaded += HandleComponentLoaded;
            loadingScreen.UpdateScreen("Loading the LED-s");
         }
         
@@ -42,20 +43,36 @@
 
     protected override async Task OnInitializedAsync()
     {
-       // await loadingScreen.OpenSplashDefaultAsync("Connection the server");
+       await loadingScreen.OpenSplashDefaultAsync("Connection the server");
     }
-
-
-  
 
     public void Dispose()
     {
        
     }
     
+    private void HandleComponentLoaded(string name)
+    {
+        switch (name)
+        {
+            case "LedStateLayout":
+                loadingScreen.UpdateScreen("Loading the LED groups");
+                loadedComponentsCount++;
+                break;
+            case "LedGroupLayout":
+                loadingScreen.UpdateScreen("Loading the LED groups");
+                loadedComponentsCount++;
+                break;
+        }
 
-   
-
+        if (loadedComponentsCount >= 2)
+        {
+#if DEBUG
+            Console.WriteLine("Both components are loaded.");
+#endif
+            loadingScreen.Close();
+        }
+    }
     private async Task<bool> OnRefreshAsync()
     {
         await ComponentMsgService.RefreshComponent();

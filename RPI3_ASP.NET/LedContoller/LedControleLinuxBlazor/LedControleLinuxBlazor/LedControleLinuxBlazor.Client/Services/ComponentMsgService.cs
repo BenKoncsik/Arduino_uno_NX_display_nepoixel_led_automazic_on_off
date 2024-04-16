@@ -3,6 +3,7 @@
     public class ComponentMsgService : IComponentMsgService
     {
         public event Func<Task> RefreshRequested;
+        public event Action<string> ComponentLoaded;
 
         public async Task RefreshComponent()
         {
@@ -10,6 +11,11 @@
             {
                 await RefreshRequested.Invoke();
             }
+        }
+
+        public void OnLoaded(string componentName)
+        {
+            ComponentLoaded?.Invoke(componentName);
         }
 
 

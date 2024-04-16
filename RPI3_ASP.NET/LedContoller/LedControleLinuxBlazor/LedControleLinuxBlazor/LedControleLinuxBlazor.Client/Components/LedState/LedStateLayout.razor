@@ -80,12 +80,22 @@
             {
                 SetLed(led);
             });
+            await LoadLeds();
         }
     }
-    private async void LoadLeds()
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ComponentMsgService.OnLoaded("LedStateLayout");
+        }
+    }
+    private async Task LoadLeds()
     {
         try
         {
+            loadingScreen.UpdateScreen("Loading the LED-s");
             await LoadLedsTask();
         }
         catch (Exception ex)
@@ -94,8 +104,7 @@
         }
         finally
         {
-           // loadingScreen.UpdateScreen("Load the LED-s");
-           // loadingScreen.Close();
+           loadingScreen.UpdateScreen("Load the LED-s");
         }
     }
 
