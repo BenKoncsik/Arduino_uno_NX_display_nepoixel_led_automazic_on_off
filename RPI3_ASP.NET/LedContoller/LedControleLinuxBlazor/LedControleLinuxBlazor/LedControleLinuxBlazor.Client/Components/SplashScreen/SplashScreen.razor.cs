@@ -1,7 +1,7 @@
 ﻿using Microsoft.FluentUI.AspNetCore.Components;
-using global::Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 
-namespace LedControleLinuxBlazor.Client.Components
+namespace LedControleLinuxBlazor.Client.Components.SplashScreen
 {
     public partial class SplashScreen
     {

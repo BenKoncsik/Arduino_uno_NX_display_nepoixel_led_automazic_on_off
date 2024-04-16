@@ -1,6 +1,6 @@
 ﻿@using LedControleLinuxBlazor.Client.Model
 @using LedControleLinuxBlazor.Const
-@using LedControleLinuxBlazor.Model
+@using LedControleLinuxBlazor.Client.Model
 <FluentCard>
     <CardHeader>
         <h3>@LedGroup.Name</h3>
@@ -51,6 +51,7 @@
             if (!Equals(value, _currentLedGroup))
             {
                 _currentLedGroup = value;
+                brightness = value.GroupState.Brightness;
                 buttonPercentage = (100 / (_currentLedGroup?.LedActions.Count ?? 1)).ToString();
                 StateHasChanged();
             }

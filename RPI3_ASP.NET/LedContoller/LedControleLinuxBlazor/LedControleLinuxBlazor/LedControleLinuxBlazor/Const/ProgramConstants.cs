@@ -1,4 +1,5 @@
-﻿using LedControleLinuxBlazor.Model;
+﻿using LedControleLinuxBlazor.Client.Model;
+using LedControleLinuxBlazor.Model;
 
 namespace LedControleLinuxBlazor.Const
 {

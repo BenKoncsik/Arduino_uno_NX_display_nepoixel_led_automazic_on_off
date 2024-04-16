@@ -2,6 +2,7 @@
 using LedControleLinuxBlazor.Extensions;
 using Microsoft.AspNetCore.Components.Routing;
 using System.Collections.ObjectModel;
+using LedControleLinuxBlazor.Client.Model;
 
 namespace LedControleLinuxBlazor.Services
 {

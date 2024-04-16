@@ -1,11 +1,11 @@
 ﻿@page "/"
-@using System.Collections.ObjectModel
-@using LedControleLinuxBlazor.Client.Model
-@using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client
-@using System.Globalization
 @using LedControleLinuxBlazor.Client.Components.LedGroups
-@inject NavigationManager NavigationManager
+@using LedControleLinuxBlazor.Client.Components.LedState
+@using LedControleLinuxBlazor.Client.Components.SplashScreen
+@implements IDisposable
+@inject IComponentMsgService ComponentMsgService
+@inject SplashScreen loadingScreen
 @rendermode InteractiveAuto
 
 <PageTitle>SLC V2</PageTitle>
@@ -16,177 +16,49 @@
                          Direction="@(PullDirection.Down)"
                          OnRefreshAsync="OnRefreshAsync">
 
-        <FluentCard class="mt-4">
-            <FluentCardBody>
-                @foreach (LEDStateJsonModel led in ledStates)
-                {
-                    <div class="led-icon" style="background-color: @led.LedColor;" @onclick="() => OpenLedDialog(led)"></div>
-                }
-            </FluentCardBody>
-        </FluentCard>
-
-        @if (selectedLed != null)
-        {
-            <FluentDialog open=true onDismiss=CloseLedDialog>
-                <FluentLayout> 
-                    <FluentDialogTitle>
-                        <FluentStack Orientation="Orientation.Horizontal">
-                            LED @selectedLed.LedNumber
-                            <FluentButton OnClick="@CloseLedDialog"><span>&times;</span></FluentButton>
-                        </FluentStack>
-                    
-                    </FluentDialogTitle>
-                    <FluentDialogContent>
-                        <FluentStack Orientation="Orientation.Vertical">
-                            <FluentForm>
-                                <FluentFormItem>
-                                    <label for="colorPicker">Color:</label>
-                                    <input type="color" id="colorPicker" value="@selectedLed.LedColor" @onchange="(e) => SetLedColor(selectedLed, e.Value.ToString())" />
-                                </FluentFormItem>
-                                <FluentFormItem>
-                                    <label for="brightnessRange">Brightness:</label>
-                                    <input type="range" id="brightnessRange" class="form-range" min="0" max="1" step="0.01" value="@selectedLed.Brightness.ToString(System.Globalization.CultureInfo.InvariantCulture)" @onchange="(e) => SetLedBrightness(selectedLed, e.Value.ToString())" />
-                                </FluentFormItem>
-                            </FluentForm>    
-                        </FluentStack>
-                    
-                    </FluentDialogContent>
-                </FluentLayout>
-            </FluentDialog>
-        }
-
-        <LedGroupLayout HubConnection="hubConnection" @rendermode="InteractiveAuto"/>
+       
+        <LedStateLayout @rendermode="InteractiveAuto"/>
+        <LedGroupLayout @rendermode="InteractiveAuto"/>
 
     </FluentPullToRefresh>
 </FluentStack>
 </FluentGrid>
 @code {
-    private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
+    
     private HubConnection? hubConnection;
-    private SplashScreen loadingScreen;
-    private LEDStateJsonModel selectedLed;
+   
     public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
-    private bool enabledRefresh = false;
+    private bool enabledRefresh = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/ledControlHub"))
-                .WithAutomaticReconnect()
-                .Build();
-            loadingScreen.UpdateScreen("Loading the LED-s");
-            hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
-            {
-                InvokeAsync(() =>
-                {
-                    ledStates = leds;
-                    #if DEBUG
-                        Console.WriteLine($"Led state: {leds[0].LedColor}");
-                    #endif
-                    StateHasChanged();
-                });
-            });
-
-            hubConnection.On<LEDStateJsonModel>("UpdateState", (led) =>
-            {
-                SetLed(led);
-            });
-
-            await hubConnection.StartAsync();
-            loadingScreen.UpdateScreen("Load the LED-s");
-            LoadLeds();        
+           hubConnection = await SocketService.StartConnectionAsync();
+           loadingScreen.UpdateScreen("Loading the LED-s");
         }
         
     }
 
     protected override async Task OnInitializedAsync()
     {
-        loadingScreen = new SplashScreen(DialogService);
-        await loadingScreen.OpenSplashDefaultAsync("Connection the server");
+       // await loadingScreen.OpenSplashDefaultAsync("Connection the server");
     }
 
 
-    private async void LoadLeds()
+  
+
+    public void Dispose()
     {
-        try
-        {
-            await LoadLedsTask();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"error conection: {ex}");
-        }
-        finally
-        {
-            loadingScreen.Close();
-            enabledRefresh = true;
-        }
+       
     }
+    
 
-    private async Task LoadLedsTask()
-    {
-        if (hubConnection.State == HubConnectionState.Connected)
-        {
-            await hubConnection.InvokeAsync("SendLedStates");
-        }
-    }
-
-    private void SetLed(LEDStateJsonModel led)
-    {
-        if (ledStates != null)
-        {
-            LEDStateJsonModel? oldLed = ledStates.FirstOrDefault(l => l.LedNumber.Equals(led.LedNumber));
-            if (oldLed == null)
-            {
-                ledStates.Add(led);
-            }
-            else
-            {
-                oldLed.LedColor = led.LedColor;
-                oldLed.Brightness = led.Brightness;
-            }
-            InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task SetLedColor(LEDStateJsonModel led, string color)
-    {
-        led.LedColor = color;
-        await hubConnection.InvokeAsync("SettLedState", led);
-    }
-
-    private async Task SetLedBrightness(LEDStateJsonModel led, string brightness)
-    {
-        if (float.TryParse(brightness, NumberStyles.Any, CultureInfo.InvariantCulture, out float brightnessValue))
-        {
-            led.Brightness = brightnessValue;
-        }
-        await hubConnection.InvokeAsync("SettLedState", led);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (hubConnection is not null)
-        {
-            await hubConnection.DisposeAsync();
-        }
-    }
-
-    private void OpenLedDialog(LEDStateJsonModel led)
-    {
-        selectedLed = led;
-    }
-
-    private void CloseLedDialog()
-    {
-        selectedLed = null;
-    }
+   
 
     private async Task<bool> OnRefreshAsync()
     {
-        await LoadLedsTask();
+        await ComponentMsgService.RefreshComponent();
         return true;
     }
 }
