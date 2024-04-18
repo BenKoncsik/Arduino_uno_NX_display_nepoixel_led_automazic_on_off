@@ -19,4 +19,5 @@ builder.Services.AddScoped<IComponentMsgService, ComponentMsgService>();
 builder.Services.AddScoped<SplashScreen>();
 
 
+
 await builder.Build().RunAsync();

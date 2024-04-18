@@ -56,6 +56,7 @@ builder.Services.AddScoped<ISocketService, SocketService>();
 builder.Services.AddScoped<IComponentMsgService, ComponentMsgService>();
 builder.Services.AddScoped<SplashScreen>();
 
+
 #if DEBUG
 builder.Services.AddSingleton<ILedStripService, LedStripBunnyService>();
 #else

@@ -17,8 +17,8 @@
                          OnRefreshAsync="OnRefreshAsync">
 
 
-            <LedStateLayout @rendermode="InteractiveAuto"/>
-        <LedGroupLayout @rendermode="InteractiveAuto" />
+            <LedStateLayout @rendermode="InteractiveAuto" OnLoaded="HandleComponentLoaded" />
+            <LedGroupLayout @rendermode="InteractiveAuto" OnLoaded="HandleComponentLoaded" />
 
     </FluentPullToRefresh>
 </FluentStack>
@@ -35,7 +35,6 @@
         if (firstRender)
         {
            hubConnection = await SocketService.StartConnectionAsync();
-            ComponentMsgService.ComponentLoaded += HandleComponentLoaded;
            loadingScreen.UpdateScreen("Loading the LED-s");
         }
         
@@ -51,15 +50,15 @@
        
     }
     
-    private void HandleComponentLoaded(string name)
+    private void HandleComponentLoaded(Type componentType)
     {
-        switch (name)
+        switch (componentType)
         {
-            case "LedStateLayout":
-                loadingScreen.UpdateScreen("Loading the LED groups");
+            case Type type when type == typeof(LedStateLayout):
+                loadingScreen.UpdateScreen("Loading the LED state");
                 loadedComponentsCount++;
                 break;
-            case "LedGroupLayout":
+            case Type type when type == typeof(LedGroupLayout):
                 loadingScreen.UpdateScreen("Loading the LED groups");
                 loadedComponentsCount++;
                 break;

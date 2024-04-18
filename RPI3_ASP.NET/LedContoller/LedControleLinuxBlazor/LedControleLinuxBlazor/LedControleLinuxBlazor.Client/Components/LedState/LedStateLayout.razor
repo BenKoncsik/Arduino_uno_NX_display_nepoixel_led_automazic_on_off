@@ -51,6 +51,8 @@
 
 @code
 {
+    [Parameter]
+    public EventCallback<Type> OnLoaded { get; set; }
     private ObservableCollection<LEDStateJsonModel> ledStates = new ObservableCollection<LEDStateJsonModel>();
     private HubConnection hubConnection;
     private LEDStateJsonModel selectedLed;
@@ -62,25 +64,22 @@
             ComponentMsgService.RefreshRequested += RefreshComponent;
             hubConnection.On<ObservableCollection<LEDStateJsonModel>>("GetLeds", (leds) =>
             {
-                InvokeAsync(() =>
+                ledStates.Clear();
+                foreach (var led in leds)
                 {
-                    ledStates.Clear();
-                    foreach (var led in leds)
-                    {
-                        ledStates.Add(led);
-                    }
+                    ledStates.Add(led);
+                }
 #if DEBUG
-                    Console.WriteLine($"Led state: {leds[0].LedColor}");
+                Console.WriteLine($"Led state: {leds[0].LedColor}");
 #endif
-                    StateHasChanged();
-                });
+                InvokeAsync(StateHasChanged);
             });
 
             hubConnection.On<LEDStateJsonModel>("UpdateState", (led) =>
             {
                 SetLed(led);
             });
-            await LoadLeds();
+            await LoadLedsTask();
         }
     }
 
@@ -88,7 +87,10 @@
     {
         if (firstRender)
         {
-            ComponentMsgService.OnLoaded("LedStateLayout");
+            if (OnLoaded.HasDelegate)
+            {
+                OnLoaded.InvokeAsync(typeof(LedStateLayout));
+            }
         }
     }
     private async Task LoadLeds()

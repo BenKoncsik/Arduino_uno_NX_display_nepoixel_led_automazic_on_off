@@ -18,6 +18,9 @@
 </FluentGrid>
 
 @code {
+    [Parameter]
+    public EventCallback<Type> OnLoaded { get; set; }
+
     private ObservableCollection<LedGroup> LedGroups { get; set; } = new ObservableCollection<LedGroup>();
     private HubConnection hubConnection;
 
@@ -55,7 +58,10 @@
     {
         if (firstRender)
         {
-                ComponentMsgService.OnLoaded("LedGroupLayout");
+            if(OnLoaded.HasDelegate)
+            {
+            OnLoaded.InvokeAsync(typeof(LedGroupLayout));
+            }
         }
     }
 
