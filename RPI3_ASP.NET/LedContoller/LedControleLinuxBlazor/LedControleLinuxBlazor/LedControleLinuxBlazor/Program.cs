@@ -1,11 +1,16 @@
 using LedControleLinuxBlazor.Client.Components;
+using LedControleLinuxBlazor.Client.Components.SplashScreen;
+using LedControleLinuxBlazor.Client.Model;
+using LedControleLinuxBlazor.Client.Services;
 using LedControleLinuxBlazor.Components;
 using LedControleLinuxBlazor.Const;
 using LedControleLinuxBlazor.Model;
 using LedControleLinuxBlazor.Services;
 using LedControleLinuxBlazor.Socket;
+using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Components.Tooltip;
+using DialogService = Microsoft.FluentUI.AspNetCore.Components.DialogService;
 
 var options = new WebApplicationOptions
 {
@@ -47,8 +52,13 @@ ProgramConstants.Init(
     ledGroups: builder.Configuration.GetSection("LedGroups").Get<List<LedGroup>>() ?? new List<LedGroup>()
     );
 
+builder.Services.AddScoped<ISocketService, SocketService>();
+builder.Services.AddScoped<IComponentMsgService, ComponentMsgService>();
+builder.Services.AddScoped<SplashScreen>();
+
+
 #if DEBUG
-    builder.Services.AddSingleton<ILedStripService, LedStripBunnyService>();
+builder.Services.AddSingleton<ILedStripService, LedStripBunnyService>();
 #else
  builder.Services.AddSingleton<ILedStripService, LedStripRPI3LinuxService>();
 #endif

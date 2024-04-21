@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Xml;
+using LedControleLinuxBlazor.Client.Model;
 
 namespace LedControleLinuxBlazor.Services
 {

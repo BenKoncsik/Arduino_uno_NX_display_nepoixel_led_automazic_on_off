@@ -1,5 +1,6 @@
 ﻿using LedControleLinuxBlazor.Model;
 using System.Collections.ObjectModel;
+using LedControleLinuxBlazor.Client.Model;
 
 namespace LedControleLinuxBlazor.Extensions
 {

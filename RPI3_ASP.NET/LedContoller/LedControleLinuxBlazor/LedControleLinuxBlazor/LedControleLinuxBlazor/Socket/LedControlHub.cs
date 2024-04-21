@@ -6,6 +6,7 @@ using LedControleLinuxBlazor.Model;
 using LedControleLinuxBlazor.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Xml;
+using LedControleLinuxBlazor.Client.Model;
 
 namespace LedControleLinuxBlazor.Socket
 {

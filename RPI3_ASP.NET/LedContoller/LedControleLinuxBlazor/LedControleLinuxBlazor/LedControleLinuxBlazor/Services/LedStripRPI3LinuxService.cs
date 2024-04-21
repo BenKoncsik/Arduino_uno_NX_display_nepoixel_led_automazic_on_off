@@ -13,6 +13,7 @@ using LedControleLinuxBlazor.Model;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using LedControleLinuxBlazor.Client.Model;
 using LedControleLinuxBlazor.Extensions;
 
 namespace LedControleLinuxBlazor.Services
