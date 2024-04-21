@@ -12,9 +12,12 @@
         Led state
     </CardHeader>
     <FluentCardBody>
-        @foreach (LEDStateJsonModel led in ledStates)
+        @if (ledStates != null)
         {
-            <div class="led-icon" style="background-color: @led.LedColor;" @onclick="() => OpenLedDialog(led)"></div>
+            @foreach (LEDStateJsonModel led in ledStates)
+            {
+                <div class="led-icon" style="background-color: @led.LedColor;" @onclick="() => OpenLedDialog(led)"></div>
+            }
         }
     </FluentCardBody>
 </FluentCard>
